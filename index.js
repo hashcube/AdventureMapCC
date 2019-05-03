@@ -3,7 +3,7 @@
  */
 
 AdventureMapLayer = cc.Layer.extend({
-  path: 'src/Modules/AdventureMap/data/',
+  path: 'src/Module/AdventureMap/data/',
   ctor: function () {
     'use strict';
 
