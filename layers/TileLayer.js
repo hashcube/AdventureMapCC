@@ -43,69 +43,24 @@ TileLayer = ccui.Widget.extend({
   reCreateTileLayer: function (mapData, horSize, verSize, tile_layer) {
     'use strict';
 
-    var verLayout, horLayout, tile, i, j, newVerLayout;
+    var verLayout, horLayout, tile, i, j,
+      tile_added = 0;
 
     verLayout = tile_layer.getChildren()[0];
     verLayout.setContentSize(verSize);
+    verLayout.retain();
+    verLayout.removeFromParent();
+    this.addChild(verLayout);
     for (i = 0; i < verLayout.getChildrenCount(); i++) {
       horLayout = verLayout.getChildren()[i];
       for (j = 0; j < horLayout.getChildrenCount(); j++) {
         tile = horLayout.getChildren()[j];
         tile.loadTexture(i + '_' + j + '.png',
           ccui.Widget.PLIST_TEXTURE);
-      }
-    }
-    newVerLayout = this.getNewVerticalLayout(verLayout, verSize,
-      horSize, mapData);
-    verLayout.removeFromParent();
-    this.addChild(newVerLayout);
-  },
-
-  getNewVerticalLayout: function (oldVerticalLayout,
-      verSize, horSize, mapData) {
-    'use strict';
-
-    var verLayout, horLayout, i, j, horChild, tileChild, tile,
-      verChildren = [],
-      horChildren = [],
-      tile_added = 0;
-
-    // create backup for all the children in pooled child
-    for (i = 0; i < oldVerticalLayout.getChildrenCount(); i++) {
-      horChildren = [];
-      horChild = oldVerticalLayout.getChildren()[i];
-      for (j = 0; j < horChild.getChildrenCount(); j++) {
-        tileChild = horChild.getChildren()[j];
-        horChildren.push(tileChild);
-      }
-      verChildren.push(horChildren);
-    }
-
-    // create new layout
-    verLayout = new ccui.Layout();
-    verLayout.setLayoutType(ccui.Layout.LINEAR_VERTICAL);
-    verLayout.setContentSize(verSize);
-
-    for (i = 0; i < verChildren.length; i++) {
-      horLayout = new ccui.Layout();
-
-      horLayout.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
-      horLayout.setContentSize(horSize);
-      for (j = 0; j < verChildren[i].length; j++) {
-        tile = verChildren[i][j];
-        tile.retain();
-        tile.removeFromParent();
-        horLayout.addChild(tile);
         this.setNode(mapData, tile_added, tile);
         tile_added += 1;
       }
-      verLayout.addChild(horLayout);
     }
-
-    // release all the children in pooled child from previous parent
-    oldVerticalLayout.removeAllChildren();
-
-    return verLayout;
   },
 
   createTileLayer: function (mapData, horSize, verSize) {
