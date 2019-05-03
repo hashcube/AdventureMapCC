@@ -1,5 +1,5 @@
 /* global cc, VerticalScrollMap, TileLayer,
-  AdventureMapLayer: true
+  AdventureMapLayer: true, Config
  */
 
 AdventureMapLayer = cc.Layer.extend({
@@ -18,7 +18,7 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var tile_config = cc.loader.getRes(this.path + 'tile_config.json'),
-      max_levels = 1080, // should come from config
+      max_levels = Config.max_levels,
       max_cycle = max_levels / 120,
       i;
 
