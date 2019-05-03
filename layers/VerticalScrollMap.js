@@ -102,7 +102,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     this._super();
     this.jumpToBottom();
-    this.addEventListener(this.onScroll.bind(this));
+    this.addEventListener(_.bind(this.onScroll, this));
   },
 
   setTopAndBottomChildIndex: function () {
@@ -118,9 +118,9 @@ VerticalScrollMap = ccui.ScrollView.extend({
     'use strict';
 
     this.cycle_length = 0;
-    tile_config.forEach(function (tileData) {
+    tile_config.forEach(_.bind(function (tileData) {
       this.cycle_length += tileData.repeat;
-    }.bind(this));
+    }, this));
     this.max_cycle = max_cycle;
   },
 

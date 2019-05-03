@@ -24,10 +24,10 @@ AdventureMapLayer = cc.Layer.extend({
 
     this.scrollableMap.setMapVariables(tile_config, max_cycle);
     for (i = 0; i < max_cycle; i++) {
-      tile_config.forEach(function (tileData) {
+      tile_config.forEach(_.bind(function (tileData) {
         this.createMapWithTile(tileData.tile_id, tileData.repeat, undefined,
           i === max_cycle - 1);
-      }.bind(this));
+      }, this));
     }
     this.scrollableMap.setAdventureMapSize();
     this.addChild(this.scrollableMap);
