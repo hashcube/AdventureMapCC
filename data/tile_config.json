@@ -1,0 +1,18 @@
+[
+  {
+    "tile_id": "bridge_2",
+    "repeat": 1
+  },
+  {
+    "tile_id": "map_2",
+    "repeat": 6
+  },
+  {
+    "tile_id": "bridge_1",
+    "repeat": 1
+  },
+  {
+    "tile_id": "map_1",
+    "repeat": 6
+  }
+]
