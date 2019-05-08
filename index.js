@@ -35,7 +35,6 @@ AdventureMapLayer = cc.Layer.extend({
 
     for (k = max_cycle; k > 0; k--) {
       for (l = 0; l < tile_config.length; l++) {
-      // tile_config.forEach(_.bind(function (tileData) {
         tileData = tile_config[l];
         tile = tileData.tile_id;
         repeat = tileData.repeat;
@@ -46,7 +45,6 @@ AdventureMapLayer = cc.Layer.extend({
         for (i = 0; i < repeat; i++) {
           for (j = 0; j < mapData.colLength; j++) {
             horLayout = new TileLayer();
-
             horLayout.tile_map = tile;
             horLayout.map_idx = i;
             horLayout.row_idx = j;
@@ -55,7 +53,6 @@ AdventureMapLayer = cc.Layer.extend({
             horLayout.setVisible(visible);
             horLayout.initTilesInLayer(mapData, this.scrollableMap);
             this.scrollableMap.addChild(horLayout);
-
           }
         }
       }
