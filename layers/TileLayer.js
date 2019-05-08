@@ -3,9 +3,12 @@
  */
 
 TEXT_TAG = 0;
+CONTAINER_TAG = 1;
 
 TileLayer = ccui.Widget.extend({
   map_idx: -1,
+  row_idx: -1,
+  map_mpx: -1,
   tile_map: '',
   ctor: function () {
     'use strict';
@@ -17,105 +20,89 @@ TileLayer = ccui.Widget.extend({
   initTilesInLayer: function (mapData, map) {
     'use strict';
 
-    var verLayoutWidth = mapData.tileWidth * mapData.rowLength,
-      verLayoutHeight = mapData.colLength * mapData.tileHeight,
-      horLayoutWidth = mapData.tileWidth * mapData.rowLength,
+    var horLayoutWidth = mapData.tileWidth * mapData.rowLength,
       horLayoutHeight = mapData.tileHeight,
       horSize = cc.size(horLayoutWidth, horLayoutHeight),
-      verSize = cc.size(verLayoutWidth, verLayoutHeight),
-      tile_layer;
+      tile_layer, container, self;
 
-    this.map = map;
-    this.setContentSize(verSize);
+    self = this;
+    self.map = map;
+    self.setContentSize(horSize);
 
-    if (this.visible) {
-      cc.spriteFrameCache.addSpriteFrames(res[this.tile_map]);
+    if (self.visible) {
       tile_layer = cc.pool.getFromPool(TileLayer);
       if (tile_layer) {
-        this.reCreateTileLayer(mapData, horSize, verSize, tile_layer);
+        self.reCreateTileLayer(mapData, tile_layer);
       } else {
-        this.createTileLayer(mapData, horSize, verSize);
-      }
-      cc.spriteFrameCache.removeSpriteFramesFromFile(res[this.tile_map]);
-    }
-  },
-
-  reCreateTileLayer: function (mapData, horSize, verSize, tile_layer) {
-    'use strict';
-
-    var verLayout, horLayout, tile, i, j,
-      tile_added = 0;
-
-    verLayout = tile_layer.getChildren()[0];
-    verLayout.setContentSize(verSize);
-    verLayout.retain();
-    verLayout.removeFromParent();
-    this.addChild(verLayout);
-    for (i = 0; i < verLayout.getChildrenCount(); i++) {
-      horLayout = verLayout.getChildren()[i];
-      for (j = 0; j < horLayout.getChildrenCount(); j++) {
-        tile = horLayout.getChildren()[j];
-        tile.loadTexture(i + '_' + j + '.png',
-          ccui.Widget.PLIST_TEXTURE);
-        this.setNode(mapData, tile_added, tile);
-        tile_added += 1;
+        container = new ccui.Layout();
+        container.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
+        container.setContentSize(horSize);
+        self.addChild(container);
+        container.setTag(CONTAINER_TAG);
+        self.createTileLayer(mapData);
       }
     }
   },
 
-  createTileLayer: function (mapData, horSize, verSize) {
+  reCreateTileLayer: function (mapData, tile_layer) {
     'use strict';
 
-    var verLayout, horLayout, tile, i, j,
-      tile_added = 0;
+    var tile, url, i, container,
+      self = this;
 
-    verLayout = new ccui.Layout();
-    verLayout.setLayoutType(ccui.Layout.LINEAR_VERTICAL);
-    verLayout.setContentSize(verSize);
-
-    for (i = 0; i < mapData.colLength; i++) {
-      horLayout = new ccui.Layout();
-
-      horLayout.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
-      horLayout.setContentSize(horSize);
-      for (j = 0; j < mapData.rowLength; j++) {
-        tile = new ccui.ImageView(i + '_' + j + '.png',
-          ccui.Widget.PLIST_TEXTURE);
-        this.setNode(mapData, tile_added, tile);
-        horLayout.addChild(tile);
-        tile_added += 1;
-      }
-      verLayout.addChild(horLayout);
+    container = tile_layer.getChildByTag(CONTAINER_TAG);
+    container.retain();
+    container.removeFromParent();
+    self.addChild(container);
+    for (i = 0; i < container.getChildrenCount(); i++) {
+      tile = container.getChildren()[i];
+      url = self.tile_map + '_' + self.row_idx + '_' + i + '.png';
+      tile.loadTexture(url, ccui.Widget.PLIST_TEXTURE);
+      self.setNode(mapData, (self.row_idx * mapData.rowLength) + i, tile);
     }
-    this.addChild(verLayout);
+  },
+
+  createTileLayer: function (mapData) {
+    'use strict';
+
+    var tile, j, url, container,
+      self = this;
+
+    container = self.getChildByTag(CONTAINER_TAG);
+    for (j = 0; j < mapData.rowLength; j++) {
+      url = self.tile_map + '_' + self.row_idx + '_' + j + '.png';
+      tile = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
+      self.setNode(mapData, (self.row_idx * mapData.rowLength) + j, tile);
+      container.addChild(tile);
+    }
   },
 
   setNode: function (mapData, tile_number, parent) {
     'use strict';
 
     var node, data, ms_number, node_posx, node_posy,
-      ms, ms_mpx, tile_idx, ms_number_text, listener,
-      ms_in_map, map;
+      ms, ms_mpx, tile_id, ms_number_text, listener,
+      ms_in_map, map, self;
 
     parent.removeAllChildren();
     data = _.find(mapData.nodes, function (obj) {
       return obj.map === tile_number;
     });
     if (data) {
+      self = this;
       node = new cc.Sprite(res.msicon);
-      map = this.map;
+      map = self.map;
       node.attr({
         x: data.x,
         y: data.y
       });
 
-      tile_idx = Number(this.tile_map.split('_')[1]);
+      tile_id = Number(self.tile_map.split('_')[1]);
       ms_in_map = mapData.nodes.length * mapData.repeat;
       ms = data.node + mapData.nodes.length *
-        (mapData.repeat - this.map_idx - 1);
-      ms = tile_idx === 1 ? ms : ms_in_map + ms;
-      ms_mpx = map.max_cycle -
-        Math.floor(map.getChildIndex(this) / map.cycle_length);
+        (mapData.repeat - self.map_idx - 1);
+      ms = tile_id === 1 ? ms : ms_in_map + ms;
+      ms_mpx = self.map_mpx;
       ms_number = (ms_mpx - 1) * (2 * ms_in_map) + ms;
 
       ms_number_text = new cc.LabelTTF(ms_number,
@@ -127,7 +114,7 @@ TileLayer = ccui.Widget.extend({
       node.addChild(ms_number_text);
       listener = cc.EventListener.create({
         event: cc.EventListener.TOUCH_ONE_BY_ONE,
-        onTouchBegan: this.onMilestoneSelected
+        onTouchBegan: self.onMilestoneSelected
       });
       cc.eventManager.addListener(listener, node);
       parent.addChild(node);
