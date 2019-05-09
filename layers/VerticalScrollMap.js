@@ -127,16 +127,6 @@ VerticalScrollMap = ccui.ScrollView.extend({
     self.setBottomChildIndex(item_length - 1);
   },
 
-  setMapVariables: function (tile_config, max_cycle) {
-    'use strict';
-
-    this.cycle_length = 0;
-    tile_config.forEach(_.bind(function (tileData) {
-      this.cycle_length += tileData.repeat;
-    }, this));
-    this.max_cycle = max_cycle;
-  },
-
   addChildToMap: function (pos) {
     'use strict';
 

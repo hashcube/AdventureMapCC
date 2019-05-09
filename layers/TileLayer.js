@@ -102,7 +102,7 @@ TileLayer = ccui.Widget.extend({
       tile_id = Number(self.tile_map.split('_')[1]);
       ms_in_map = mapData.nodes.length * mapData.repeat;
       ms = data.node + mapData.nodes.length *
-        (mapData.repeat - self.map_idx - 1);
+        (self.map_idx - 1);
       ms = tile_id === 1 ? ms : ms_in_map + ms;
       ms_mpx = self.map_mpx;
       ms_number = (ms_mpx - 1) * (2 * ms_in_map) + ms;
