@@ -42,7 +42,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
       top_view_item = self.getTopmostItemInCurrentView(),
       top_view_item_height = top_view_item.getContentSize().height,
       top_visible_item = self.map_children[self.getTopChildIndex()],
-      top_distance = Math.abs(top_view_item.y - top_visible_item.y),
+      top_distance = top_visible_item.y - top_view_item.y,
       dist_checker = MAP_CONSTANTS.DIST_CHECK_CONST * top_view_item_height;
 
     if (top_distance < dist_checker) {
@@ -57,7 +57,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
       bottom_view_item = self.getBottommostItemInCurrentView(),
       bottom_view_item_height = bottom_view_item.getContentSize().height,
       bottom_visible_item = self.map_children[self.getBottomChildIndex()],
-      bottom_distance = Math.abs(bottom_view_item.y - bottom_visible_item.y),
+      bottom_distance = bottom_view_item.y - bottom_visible_item.y,
       dist_checker = MAP_CONSTANTS.DIST_CHECK_CONST * bottom_view_item_height;
 
     if (bottom_distance < dist_checker) {
