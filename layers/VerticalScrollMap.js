@@ -254,8 +254,6 @@ VerticalScrollMap = ccui.ScrollView.extend({
     var self = this,
       midIndex, childPosition, distanceFromMid;
 
-    cc.assert(firstIndex >= 0 && lastIndex < children.length &&
-      firstIndex <= lastIndex, '');
     if (firstIndex === lastIndex) {
       return children[firstIndex];
     }
