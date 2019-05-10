@@ -10,22 +10,25 @@ TileLayer = ccui.Widget.extend({
   row_idx: -1,
   map_mpx: -1,
   tile_map: '',
-  ctor: function () {
+  hor_size: null,
+  ctor: function (mapData) {
     'use strict';
 
+    var horLayoutWidth = mapData.tileWidth * mapData.rowLength,
+      horLayoutHeight = mapData.tileHeight;
+
     this._super();
+    this.hor_size = cc.size(horLayoutWidth, horLayoutHeight);
     return true;
   },
 
   initTilesInLayer: function (mapData, map) {
     'use strict';
 
-    var horLayoutWidth = mapData.tileWidth * mapData.rowLength,
-      horLayoutHeight = mapData.tileHeight,
-      horSize = cc.size(horLayoutWidth, horLayoutHeight),
-      tile_layer, container, self;
+    var self = this,
+      horSize = self.hor_size,
+      tile_layer, container;
 
-    self = this;
     self.map = map;
     self.setContentSize(horSize);
 

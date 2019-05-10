@@ -43,7 +43,7 @@ AdventureMapLayer = cc.Layer.extend({
 
       for (i = repeat; i > 0; i--) {
         for (j = 0; j < colLength; j++) {
-          horLayout = new TileLayer();
+          horLayout = new TileLayer(mapData);
           horLayout.tile_map = tile;
           horLayout.map_idx = i;
           horLayout.row_idx = j;
