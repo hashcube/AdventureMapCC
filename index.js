@@ -8,7 +8,6 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     this._super();
-    cc.log('Adventure Map initialized!!');
     this.scrollableMap = new VerticalScrollMap();
 
     return true;
