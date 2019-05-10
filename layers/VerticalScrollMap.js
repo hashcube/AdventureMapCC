@@ -105,6 +105,8 @@ VerticalScrollMap = ccui.ScrollView.extend({
     'use strict';
 
     this._super();
+
+    // will make a custom function to scroll to the visible area
     this.jumpToBottom();
     this.addEventListener(_.bind(this.onScroll, this));
   },

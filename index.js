@@ -57,6 +57,7 @@ AdventureMapLayer = cc.Layer.extend({
   getMapVisibility: function (cycle, repeat) {
     'use strict';
 
+    // will change the function to show visible area of the current max_ms_no
     return cycle < 2 && repeat < 3;
   },
 
