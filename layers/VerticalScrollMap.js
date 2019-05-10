@@ -164,29 +164,19 @@ VerticalScrollMap = ccui.ScrollView.extend({
   getTopmostItemInCurrentView: function () {
     'use strict';
 
-    var self = this;
-
-    if (self.getDirection() === ccui.ScrollView.DIR_VERTICAL) {
-      return self.getClosestItemToPositionInCurrentView(
-        cc.p(0.5, 1),
-        cc.p(0.5, 0.5)
-      );
-    }
-    return null;
+    return this.getClosestItemToPositionInCurrentView(
+      cc.p(0.5, 1),
+      cc.p(0.5, 0.5)
+    );
   },
 
   getBottommostItemInCurrentView: function () {
     'use strict';
 
-    var self = this;
-
-    if (self.getDirection() === ccui.ScrollView.DIR_VERTICAL) {
-      return self.getClosestItemToPositionInCurrentView(
-        cc.p(0.5, 0),
-        cc.p(0.5, 0.5)
-      );
-    }
-    return null;
+    return this.getClosestItemToPositionInCurrentView(
+      cc.p(0.5, 0),
+      cc.p(0.5, 0.5)
+    );
   },
 
   getClosestItemToPositionInCurrentView: function (positionRatioInView,
