@@ -1,9 +1,10 @@
 /* global cc, ccui, VerticalScrollMap: true,
-  LAYER_POS: true
+  MAP_CONSTANTS: true
  */
- LAYER_POS = {
-   TOP: 0,
-   BOTTOM: 1
+ MAP_CONSTANTS = {
+   POS_TOP: 0,
+   POS_BOTTOM: 1,
+   DIST_CHECK_CONST: 10
  };
 VerticalScrollMap = ccui.ScrollView.extend({
   map_children: [],
@@ -39,11 +40,13 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     var self = this,
       top_view_item = self.getTopmostItemInCurrentView(),
+      top_view_item_height = top_view_item.getContentSize().height,
       top_visible_item = self.map_children[self.getTopChildIndex()],
-      top_distance = Math.abs(top_view_item.y - top_visible_item.y);
+      top_distance = Math.abs(top_view_item.y - top_visible_item.y),
+      dist_checker = MAP_CONSTANTS.DIST_CHECK_CONST * top_view_item_height;
 
-    if (top_distance < 10 * top_view_item.getContentSize().height) {
-      self.addChildToMap(LAYER_POS.TOP);
+    if (top_distance < dist_checker) {
+      self.addChildToMap(MAP_CONSTANTS.POS_TOP);
     }
   },
 
@@ -52,11 +55,13 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     var self = this,
       bottom_view_item = self.getBottommostItemInCurrentView(),
+      bottom_view_item_height = bottom_view_item.getContentSize().height,
       bottom_visible_item = self.map_children[self.getBottomChildIndex()],
-      bottom_distance = Math.abs(bottom_view_item.y - bottom_visible_item.y);
+      bottom_distance = Math.abs(bottom_view_item.y - bottom_visible_item.y),
+      dist_checker = MAP_CONSTANTS.DIST_CHECK_CONST * bottom_view_item_height;
 
-    if (bottom_distance < 10 * bottom_view_item.getContentSize().height) {
-      self.addChildToMap(LAYER_POS.BOTTOM);
+    if (bottom_distance < dist_checker) {
+      self.addChildToMap(MAP_CONSTANTS.POS_BOTTOM);
     }
   },
 
@@ -135,7 +140,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
     var self = this,
       add_index, remove_index;
 
-    if (pos === LAYER_POS.TOP) {
+    if (pos === MAP_CONSTANTS.POS_TOP) {
       add_index = self.getTopChildIndex() - 1;
       if (add_index < 0) {
         return;

@@ -17,29 +17,32 @@ AdventureMapLayer = cc.Layer.extend({
   build: function () {
     'use strict';
 
-    var tile_config = cc.loader.getRes(this.path + 'tile_config.json');
+    var tile_config = cc.loader.getRes(this.path + 'tile_config.json'),
+      map = this.scrollableMap;
 
     this.initializeMap(tile_config);
-    this.scrollableMap.setAdventureMapSize();
-    this.addChild(this.scrollableMap);
+    map.setAdventureMapSize();
+    this.addChild(map);
   },
 
   initializeMap: function (tile_config) {
     'use strict';
 
     var i, j, k, tileData, tile, repeat,
-      mapData, horLayout, visible;
+      mapData, horLayout, visible, map, colLength;
 
     for (k = tile_config.length; k > 0; k--) {
       tileData = tile_config[tile_config.length - k];
       tile = tileData.tile_id;
       repeat = tileData.repeat;
+      map = this.scrollableMap;
 
       mapData = cc.loader.getRes(this.path + tile + '.json');
       cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
+      colLength = mapData.colLength;
 
       for (i = repeat; i > 0; i--) {
-        for (j = 0; j < mapData.colLength; j++) {
+        for (j = 0; j < colLength; j++) {
           horLayout = new TileLayer();
           horLayout.tile_map = tile;
           horLayout.map_idx = i;
@@ -47,8 +50,8 @@ AdventureMapLayer = cc.Layer.extend({
           horLayout.map_mpx = Math.ceil(k / 4);
           visible = this.getMapVisibility(k, i);
           horLayout.setVisible(visible);
-          horLayout.initTilesInLayer(mapData, this.scrollableMap);
-          this.scrollableMap.addChild(horLayout);
+          horLayout.initTilesInLayer(mapData, map);
+          map.addChild(horLayout);
         }
       }
     }
@@ -65,11 +68,12 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var horLayout, mapData,
-      self = this;
+      self = this,
+      map = self.scrollableMap;
 
-    horLayout = self.scrollableMap.map_children[index];
+    horLayout = map.map_children[index];
     horLayout.setVisible(true);
     mapData = cc.loader.getRes(self.path + horLayout.tile_map + '.json');
-    horLayout.initTilesInLayer(mapData, self.scrollableMap);
+    horLayout.initTilesInLayer(mapData, map);
   }
 });

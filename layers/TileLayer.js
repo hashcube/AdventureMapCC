@@ -47,16 +47,18 @@ TileLayer = ccui.Widget.extend({
   reCreateTileLayer: function (mapData, tile_layer) {
     'use strict';
 
-    var tile, url, i, container, tile_added,
+    var tile, url, i, container, tile_added, prev_tiles_added,
       self = this;
 
     container = tile_layer.getChildByTag(CONTAINER_TAG);
     container.retain();
     container.removeFromParent();
     self.addChild(container);
+
+    prev_tiles_added = self.row_idx * mapData.rowLength;
     for (i = 0; i < container.getChildrenCount(); i++) {
       tile = container.getChildren()[i];
-      tile_added = self.row_idx * mapData.rowLength + i;
+      tile_added = prev_tiles_added + i;
       url = self.tile_map + '_' + self.row_idx + '_' + i + '.png';
       tile.loadTexture(url, ccui.Widget.PLIST_TEXTURE);
       self.setNode(mapData, tile_added, tile);
@@ -66,13 +68,14 @@ TileLayer = ccui.Widget.extend({
   createTileLayer: function (mapData) {
     'use strict';
 
-    var tile, j, url, container, tile_added,
+    var tile, j, url, container, tile_added, prev_tiles_added,
       self = this;
 
     container = self.getChildByTag(CONTAINER_TAG);
+    prev_tiles_added = self.row_idx * mapData.rowLength;
     for (j = 0; j < mapData.rowLength; j++) {
       url = self.tile_map + '_' + self.row_idx + '_' + j + '.png';
-      tile_added = self.row_idx * mapData.rowLength + j;
+      tile_added = prev_tiles_added + j;
       tile = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
       self.setNode(mapData, tile_added, tile);
       container.addChild(tile);
