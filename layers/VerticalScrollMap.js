@@ -8,6 +8,7 @@
  };
 VerticalScrollMap = ccui.ScrollView.extend({
   map_children: [],
+  map_position: null,
   ctor: function () {
     'use strict';
 
@@ -111,9 +112,13 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     this._super();
 
-    // will make a custom function to scroll to the visible area
-    this.jumpToBottom();
-    this.addEventListener(_.bind(this.onScroll, this));
+    if (this.map_position) {
+      this.setInnerContainerPosition(this.map_position);
+    } else {
+      // will make a custom function to scroll to the visible area
+      this.jumpToBottom();
+      this.addEventListener(_.bind(this.onScroll, this));
+    }
   },
 
   setTopAndBottomChildIndex: function () {

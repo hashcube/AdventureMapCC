@@ -89,8 +89,8 @@ TileLayer = ccui.Widget.extend({
     'use strict';
 
     var node, data, ms_number, node_posx, node_posy,
-      ms, ms_mpx, tile_id, ms_number_text, listener,
-      ms_in_map, map, self;
+      ms, ms_mpx, tile_id, ms_number_text, ms_in_map,
+      map, self;
 
     parent.removeAllChildren();
     data = _.find(mapData.nodes, function (obj) {
@@ -98,7 +98,7 @@ TileLayer = ccui.Widget.extend({
     });
     if (data) {
       self = this;
-      node = new cc.Sprite(res.msicon);
+      node = new ccui.ImageView(res.msicon);
       map = self.map;
       node.attr({
         x: data.x,
@@ -120,30 +120,22 @@ TileLayer = ccui.Widget.extend({
       node_posy = node.getContentSize().height / 4;
       ms_number_text.setPosition(cc.p(node_posx, node_posy));
       node.addChild(ms_number_text);
-      listener = cc.EventListener.create({
-        event: cc.EventListener.TOUCH_ONE_BY_ONE,
-        onTouchBegan: self.onMilestoneSelected
-      });
-      cc.eventManager.addListener(listener, node);
+      node.setTouchEnabled(true);
+      node.addTouchEventListener(_.bind(this.onMilestoneSelected, this), node);
       parent.addChild(node);
     }
   },
 
-  onMilestoneSelected: function (touch, event) {
+  onMilestoneSelected: function (target, type) {
     'use strict';
 
-    var target = event.getCurrentTarget(),
-      point = touch.getLocation(),
-      locationInNode = target.convertToNodeSpace(point),
-      targetSize = target.getContentSize(),
-      rect = cc.rect(0, 0, targetSize.width, targetSize.height),
-      ms_number;
+    var ms_number;
 
-    if (cc.rectContainsPoint(rect, locationInNode)) {
+    if (type === ccui.Widget.TOUCH_ENDED) {
       ms_number = target.getChildByTag(TEXT_TAG).getString();
       cc.eventManager.dispatchCustomEvent('ms_selected', {ms: ms_number});
+      this.map.map_position = this.map.getInnerContainerPosition();
     }
-    return true;
   },
 
   unuse: function () {
