@@ -1,11 +1,13 @@
 /* global cc, ccui, VerticalScrollMap: true,
   MAP_CONSTANTS: true
  */
- MAP_CONSTANTS = {
-   POS_TOP: 0,
-   POS_BOTTOM: 1,
-   DIST_CHECK_CONST: 10
- };
+
+MAP_CONSTANTS = {
+  POS_TOP: 0,
+  POS_BOTTOM: 1,
+  DIST_CHECK_CONST: 10
+};
+
 VerticalScrollMap = ccui.ScrollView.extend({
   map_children: [],
   map_position: null,
