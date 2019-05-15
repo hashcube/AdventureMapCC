@@ -132,6 +132,8 @@ VerticalScrollMap = ccui.ScrollView.extend({
   },
 
   jumpToVisibleArea: function () {
+    'use strict';
+
     var percent, i, average, buffer,
       focus_index = this.getChildIndex(this.getFocusChild()),
       tot_children = this.map_children.length,
@@ -150,7 +152,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
       top_visible_idx -= buffer;
     }
 
-    percent = (average / tot_children) * 100;
+    percent = average / tot_children * 100;
     this.jumpToPercentVertical(percent);
     for (i = top_visible_idx; i <= bottom_visible_idx; i++) {
       this.map_children[i].createTileLayer();
