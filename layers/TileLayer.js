@@ -8,7 +8,7 @@ CONTAINER_TAG = 1;
 TileLayer = ccui.Widget.extend({
   map_idx: -1,
   row_idx: -1,
-  map_mpx: -1,
+  prev_max_ms: -1,
   tile_map: '',
   hor_size: null,
   ctor: function (mapData) {
@@ -88,32 +88,21 @@ TileLayer = ccui.Widget.extend({
   setNode: function (mapData, tile_number, parent) {
     'use strict';
 
-    var node, data, ms_number, node_posx, node_posy,
-      ms, ms_mpx, tile_id, ms_number_text, ms_in_map,
-      map, self;
+    var node, data, node_posx, node_posy, ms_number_text;
 
     parent.removeAllChildren();
     data = _.find(mapData.nodes, function (obj) {
       return obj.map === tile_number;
     });
     if (data) {
-      self = this;
+      this.setMilestone(data, mapData, parent);
       node = new ccui.ImageView(res.msicon);
-      map = self.map;
       node.attr({
         x: data.x,
         y: data.y
       });
 
-      tile_id = Number(self.tile_map.split('_')[1]);
-      ms_in_map = mapData.nodes.length * mapData.repeat;
-      ms = data.node + mapData.nodes.length *
-        (self.map_idx - 1);
-      ms = tile_id === 1 ? ms : ms_in_map + ms;
-      ms_mpx = self.map_mpx;
-      ms_number = (ms_mpx - 1) * (2 * ms_in_map) + ms;
-
-      ms_number_text = new cc.LabelTTF(ms_number,
+      ms_number_text = new cc.LabelTTF(this._msNumber,
         cc._mGetCustomFontName(res.Sansita_Bold));
       ms_number_text.setTag(TEXT_TAG);
       node_posx = node.getContentSize().width / 2;
@@ -124,6 +113,21 @@ TileLayer = ccui.Widget.extend({
       node.addTouchEventListener(_.bind(this.onMilestoneSelected, this), node);
       parent.addChild(node);
     }
+  },
+
+  setMilestone: function (data, mapData, parent) {
+    var self = this,
+      map = self.map,
+      ms_in_map, ms, ms_number;
+
+    ms_in_map = mapData.nodes.length * mapData.repeat;
+    ms = data.node + mapData.nodes.length * self.map_idx;
+    ms_number = self.prev_max_ms + ms;
+    if (ms_number === mapData.max_ms_no) {
+      map.setFocusChild(this);
+    }
+    this._nodeChild = parent;
+    this._msNumber = ms_number;
   },
 
   onMilestoneSelected: function (target, type) {

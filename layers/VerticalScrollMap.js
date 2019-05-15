@@ -107,6 +107,18 @@ VerticalScrollMap = ccui.ScrollView.extend({
     return this.bottom_child_idx;
   },
 
+  setFocusChild: function (child) {
+    'use strict';
+
+    this.focus_child_idx = child;
+  },
+
+  getFocusChild: function () {
+    'use strict';
+
+    return this.focus_child_idx;
+  },
+
   onEnter: function () {
     'use strict';
 
@@ -115,10 +127,19 @@ VerticalScrollMap = ccui.ScrollView.extend({
     if (this.map_position) {
       this.setInnerContainerPosition(this.map_position);
     } else {
-      // will make a custom function to scroll to the visible area
-      this.jumpToBottom();
-      this.addEventListener(_.bind(this.onScroll, this));
+      // this.jumpToBottom();
+      this.jumpToVisibleArea();
+      // this.addEventListener(_.bind(this.onScroll, this));
     }
+  },
+
+  jumpToVisibleArea: function () {
+    var percent,
+      focus_index = this.getChildIndex(this.getFocusChild()),
+      tot_children = this.map_children.length;
+
+    percent = ((focus_index) / tot_children) * 100;
+    this.jumpToPercentVertical(percent);
   },
 
   setTopAndBottomChildIndex: function () {
@@ -136,7 +157,13 @@ VerticalScrollMap = ccui.ScrollView.extend({
         break;
       }
     }
-    self.setBottomChildIndex(item_length - 1);
+    for (i = item_length - 1; i >= 0 ; i--) {
+      child = children[i];
+      if (child.visible) {
+        self.setBottomChildIndex(self.getChildIndex(child));
+        break;
+      }
+    }
   },
 
   addChildToMap: function (pos) {
