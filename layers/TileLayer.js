@@ -1,5 +1,5 @@
-/* global cc, ccui, res, CONTAINER_TAG: true,
-  TileLayer: true, TEXT_TAG: true
+/* global cc, ccui, CONTAINER_TAG: true,
+  TileLayer: true, TEXT_TAG: true, NodeLayer
  */
 
 TEXT_TAG = 0;
@@ -101,7 +101,7 @@ TileLayer = ccui.Widget.extend({
   setNode: function (mapData, tile_number, parent) {
     'use strict';
 
-    var node, data, node_posx, node_posy, ms_number_text;
+    var node, data;
 
     parent.removeAllChildren();
     data = _.find(mapData.nodes, function (obj) {
@@ -109,19 +109,8 @@ TileLayer = ccui.Widget.extend({
     });
     if (data) {
       this.setMilestone(data, mapData);
-      node = new ccui.ImageView(res.msicon);
-      node.attr({
-        x: data.x,
-        y: data.y
-      });
-
-      ms_number_text = new cc.LabelTTF(this._msNumber,
-        cc._mGetCustomFontName(res.Sansita_Bold));
-      ms_number_text.setTag(TEXT_TAG);
-      node_posx = node.getContentSize().width / 2;
-      node_posy = node.getContentSize().height / 4;
-      ms_number_text.setPosition(cc.p(node_posx, node_posy));
-      node.addChild(ms_number_text);
+      node = new NodeLayer();
+      node.build(data, this._msNumber);
       node.setTouchEnabled(true);
       node.addTouchEventListener(_.bind(this.onMilestoneSelected, this), node);
       parent.addChild(node);
