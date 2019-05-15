@@ -33,7 +33,6 @@ VerticalScrollMap = ccui.ScrollView.extend({
     }
     totalWidth = locItems[0].getContentSize().width;
     this.setInnerContainerSize(cc.size(totalWidth, totalHeight));
-    this.setTopAndBottomChildIndex();
   },
 
   checkTopBoundary: function () {
@@ -127,43 +126,46 @@ VerticalScrollMap = ccui.ScrollView.extend({
     if (this.map_position) {
       this.setInnerContainerPosition(this.map_position);
     } else {
-      // this.jumpToBottom();
       this.jumpToVisibleArea();
-      // this.addEventListener(_.bind(this.onScroll, this));
+      this.addEventListener(_.bind(this.onScroll, this));
     }
   },
 
   jumpToVisibleArea: function () {
-    var percent,
+    var percent, i, average, buffer,
       focus_index = this.getChildIndex(this.getFocusChild()),
-      tot_children = this.map_children.length;
+      tot_children = this.map_children.length,
+      bottom_visible_idx = focus_index + 20,
+      top_visible_idx = focus_index - 20,
+      last_child_idx = this.map_children.length - 1;
 
-    percent = ((focus_index) / tot_children) * 100;
+    average = Math.floor(bottom_visible_idx + top_visible_idx) / 2;
+    if (top_visible_idx < 0) {
+      buffer = Math.abs(top_visible_idx);
+      top_visible_idx = 0;
+      bottom_visible_idx += buffer;
+    } else if (bottom_visible_idx > last_child_idx) {
+      buffer = Math.abs(bottom_visible_idx - last_child_idx);
+      bottom_visible_idx = last_child_idx;
+      top_visible_idx -= buffer;
+    }
+
+    percent = (average / tot_children) * 100;
     this.jumpToPercentVertical(percent);
+    for (i = top_visible_idx; i <= bottom_visible_idx; i++) {
+      this.map_children[i].createTileLayer();
+      this.map_children[i].setVisible(true);
+    }
+    this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
   },
 
-  setTopAndBottomChildIndex: function () {
+  setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {
     'use strict';
 
-    var self = this,
-      children = self.map_children,
-      item_length = children.length,
-      child, i;
+    var self = this;
 
-    for (i = 0; i < item_length; i++) {
-      child = children[i];
-      if (child.visible) {
-        self.setTopChildIndex(self.getChildIndex(child));
-        break;
-      }
-    }
-    for (i = item_length - 1; i >= 0 ; i--) {
-      child = children[i];
-      if (child.visible) {
-        self.setBottomChildIndex(self.getChildIndex(child));
-        break;
-      }
-    }
+    self.setTopChildIndex(top_visible_idx);
+    self.setBottomChildIndex(bottom_visible_idx);
   },
 
   addChildToMap: function (pos) {
