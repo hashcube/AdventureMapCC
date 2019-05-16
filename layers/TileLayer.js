@@ -45,9 +45,7 @@ TileLayer = ccui.Widget.extend({
     prev_tiles_added = self.row_idx * mapData.rowLength;
     for (j = 0; j < mapData.rowLength; j++) {
       tile_added = prev_tiles_added + j;
-      data = _.find(mapData.nodes, function (obj) {
-        return obj.map === tile_added;
-      });
+      data = self.checkInArray(mapData.nodes, tile_added);
       if (data) {
         self.setMilestone(data, mapData);
       }
@@ -106,9 +104,7 @@ TileLayer = ccui.Widget.extend({
      self = this;
 
     parent.removeAllChildren();
-    data = _.find(mapData.nodes, function (obj) {
-      return obj.map === tile_number;
-    });
+    data = self.checkInArray(mapData.nodes, tile_number);
     if (data) {
       self.setMilestone(data, mapData);
       node = new NodeLayer();
@@ -165,6 +161,14 @@ TileLayer = ccui.Widget.extend({
       cc.eventManager.dispatchCustomEvent('ms_selected', {ms: ms_number});
       self.map.map_position = self.map.getInnerContainerPosition();
     }
+  },
+
+  checkInArray: function (array, condition) {
+    'use strict';
+
+    return _.find(array, function (obj) {
+      return obj.map === condition;
+    });
   },
 
   unuse: function () {
