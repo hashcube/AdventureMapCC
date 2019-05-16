@@ -5,6 +5,7 @@
 AdventureMapLayer = cc.Layer.extend({
   data_path: '',
   node_settings: null,
+  max_ms: 0,
   ctor: function () {
     'use strict';
 
@@ -19,7 +20,7 @@ AdventureMapLayer = cc.Layer.extend({
 
     var tile_config, node_settings,
       map = this.scrollableMap,
-      max_ms_no = opts.ms;
+      max_ms_no = this.max_ms = opts.ms;
 
     this.data_path = opts.data_path;
     node_settings = cc.loader.getRes(
@@ -78,6 +79,7 @@ AdventureMapLayer = cc.Layer.extend({
     horLayout = map.map_children[index];
     horLayout.setVisible(true);
     mapData = cc.loader.getRes(self.data_path + horLayout.tile_map + '.json');
+    mapData.max_ms_no = self.max_ms;
     horLayout.reCreateTileLayer(mapData);
   }
 });
