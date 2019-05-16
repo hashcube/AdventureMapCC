@@ -1,9 +1,8 @@
 /* global cc, ccui, CONTAINER_TAG: true,
-  TileLayer: true, TEXT_TAG: true, NodeLayer
+  TileLayer: true, NodeLayer
  */
 
-TEXT_TAG = 0;
-CONTAINER_TAG = 1;
+CONTAINER_TAG = 0;
 
 TileLayer = ccui.Widget.extend({
   map_idx: -1,
@@ -12,6 +11,7 @@ TileLayer = ccui.Widget.extend({
   tile_map: '',
   hor_size: null,
   map_data: null,
+  node_settings: null,
   ctor: function (mapData) {
     'use strict';
 
@@ -24,13 +24,14 @@ TileLayer = ccui.Widget.extend({
     return true;
   },
 
-  build: function (mapData, map) {
+  build: function (mapData, map, node_settings) {
     'use strict';
 
     var self = this,
       horSize = self.hor_size;
 
     self.map = map;
+    self.node_settings = node_settings;
     self.setContentSize(horSize);
     self.generateTileLayer(mapData);
   },
@@ -85,7 +86,7 @@ TileLayer = ccui.Widget.extend({
     mapData = mapData || self.map_data;
     container = new ccui.Layout();
     container.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
-    container.setContentSize(this.hor_size);
+    container.setContentSize(self.hor_size);
     self.addChild(container);
     container.setTag(CONTAINER_TAG);
     prev_tiles_added = self.row_idx * mapData.rowLength;
@@ -101,20 +102,40 @@ TileLayer = ccui.Widget.extend({
   setNode: function (mapData, tile_number, parent) {
     'use strict';
 
-    var node, data;
+    var node, data,
+     self = this;
 
     parent.removeAllChildren();
     data = _.find(mapData.nodes, function (obj) {
       return obj.map === tile_number;
     });
     if (data) {
-      this.setMilestone(data, mapData);
+      self.setMilestone(data, mapData);
       node = new NodeLayer();
-      node.build(data, this._msNumber);
+      data.url = self.getImageURL(mapData.max_ms_no);
+      data.ms = self._msNumber;
+      node.build(data);
       node.setTouchEnabled(true);
-      node.addTouchEventListener(_.bind(this.onMilestoneSelected, this), node);
+      if (self._msNumber <= mapData.max_ms_no) {
+        node.addTouchEventListener(_.bind(self.onMilestoneSelected, self
+        ), node);
+      }
       parent.addChild(node);
     }
+  },
+
+  getImageURL: function (max_ms) {
+    'use strict';
+
+    var self = this,
+      nodes = self.node_settings.nodes,
+      ms = self._msNumber,
+      stars = 0,
+      url;
+
+    url = ms <= max_ms ? nodes[stars].image :
+      nodes[nodes.length - 1].image;
+    return url;
   },
 
   setMilestone: function (data, mapData) {
@@ -128,20 +149,21 @@ TileLayer = ccui.Widget.extend({
     ms = data.node + mapData.nodes.length * self.map_idx;
     ms_number = self.prev_max_ms + ms;
     if (ms_number === mapData.max_ms_no) {
-      map.setFocusChild(this);
+      map.setFocusChild(self);
     }
-    this._msNumber = ms_number;
+    self._msNumber = ms_number;
   },
 
   onMilestoneSelected: function (target, type) {
     'use strict';
 
-    var ms_number;
+    var ms_number,
+      self = this;
 
     if (type === ccui.Widget.TOUCH_ENDED) {
-      ms_number = target.getChildByTag(TEXT_TAG).getString();
+      ms_number = target.milestone;
       cc.eventManager.dispatchCustomEvent('ms_selected', {ms: ms_number});
-      this.map.map_position = this.map.getInnerContainerPosition();
+      self.map.map_position = self.map.getInnerContainerPosition();
     }
   },
 

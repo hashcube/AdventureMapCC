@@ -3,7 +3,8 @@
  */
 
 AdventureMapLayer = cc.Layer.extend({
-  path: 'src/data/adventuremap/',
+  data_path: '',
+  node_settings: null,
   ctor: function () {
     'use strict';
 
@@ -16,16 +17,25 @@ AdventureMapLayer = cc.Layer.extend({
   build: function (opts) {
     'use strict';
 
-    var tile_config = cc.loader.getRes(this.path + 'tile_config.json'),
+    var tile_config, node_settings,
       map = this.scrollableMap,
       max_ms_no = opts.ms;
 
-    this.initializeMap(tile_config, max_ms_no);
+    this.data_path = opts.data_path;
+    node_settings = cc.loader.getRes(
+      this.data_path + 'settings/node_settings.json'
+    );
+    tile_config = cc.loader.getRes(this.data_path + 'tile_config.json');
+    cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
+      res[node_settings.node_img]
+    );
+
+    this.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
     this.addChild(map);
   },
 
-  initializeMap: function (tile_config, max_ms_no) {
+  initializeMap: function (tile_config, max_ms_no, node_settings) {
     'use strict';
 
     var i, j, k, tileData, tile, repeat, mapData,
@@ -38,7 +48,7 @@ AdventureMapLayer = cc.Layer.extend({
       range = tileData.range;
       map = this.scrollableMap;
 
-      mapData = cc.loader.getRes(this.path + tile + '.json');
+      mapData = cc.loader.getRes(this.data_path + tile + '.json');
       mapData.max_ms_no = max_ms_no;
       cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
       colLength = mapData.colLength;
@@ -51,7 +61,7 @@ AdventureMapLayer = cc.Layer.extend({
           horLayout.row_idx = j;
           horLayout.prev_max_ms = range ? range.min - 1 : 0;
           horLayout.setVisible(false);
-          horLayout.build(mapData, map);
+          horLayout.build(mapData, map, node_settings);
           map.addChild(horLayout);
         }
       }
@@ -67,7 +77,7 @@ AdventureMapLayer = cc.Layer.extend({
 
     horLayout = map.map_children[index];
     horLayout.setVisible(true);
-    mapData = cc.loader.getRes(self.path + horLayout.tile_map + '.json');
+    mapData = cc.loader.getRes(self.data_path + horLayout.tile_map + '.json');
     horLayout.reCreateTileLayer(mapData);
   }
 });
