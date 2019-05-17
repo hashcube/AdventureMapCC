@@ -1,5 +1,5 @@
 /* global cc, ccui,
-  NodeLayer: true
+  NodeLayer: true, res
  */
 
 NodeLayer = ccui.Widget.extend({
@@ -15,9 +15,9 @@ NodeLayer = ccui.Widget.extend({
     'use strict';
 
     var node_pos, node_size, node_image,
-      num_layout, num_width, num_height, num, i,
+      ms_number_text, ms_text_color, ms_stroke_color,
       self = this,
-      numbers = [],
+      char_settings = opts.character_settings,
       url = opts.url;
 
     self.milestone = opts.ms;
@@ -28,34 +28,17 @@ NodeLayer = ccui.Widget.extend({
     self.setContentSize(node_size);
     self.setPosition(cc.p(opts.x, opts.y));
 
-    numbers = self.getNumbersInMs(opts.ms);
-    num_layout = new ccui.Layout();
-    num_layout.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
-    num_width = 0;
-    for (i = 0; i < numbers.length; i++) {
-      num = new ccui.ImageView(numbers[i] + '.png', ccui.Widget.PLIST_TEXTURE);
-      num_width += num.getContentSize().width;
-      num_layout.addChild(num);
-    }
-    num_height = num.getContentSize().height;
-    num_layout.setContentSize(cc.size(num_width, num_height));
-    num_layout.setPosition(cc.p(node_pos.x, node_pos.y * 0.5));
-    num_layout.setAnchorPoint(cc.p(0.5, 0.5));
-    node_image.addChild(num_layout);
+    ms_number_text = new cc.LabelTTF(opts.ms,
+        cc._mGetCustomFontName(res[char_settings.font]));
+    ms_text_color = cc.color(char_settings.font_color);
+    ms_stroke_color = cc.color(char_settings.stroke_color);
+    ms_number_text.setPosition(cc.p(node_pos.x, node_pos.y * 0.55));
+    ms_number_text.setFontFillColor(ms_text_color);
+    ms_number_text.enableStroke(ms_stroke_color, char_settings.stroke_width);
+    ms_number_text.setFontSize(char_settings.font_size);
+    node_image.addChild(ms_number_text);
 
     node_image.setPosition(node_pos);
     self.addChild(node_image);
-  },
-
-  getNumbersInMs: function (ms) {
-    'use strict';
-
-    var numbers = [];
-
-    while (ms > 0) {
-      numbers.push(ms % 10);
-      ms = Math.floor(ms / 10);
-    }
-    return numbers.reverse();
   }
 });

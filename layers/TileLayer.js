@@ -110,6 +110,7 @@ TileLayer = ccui.Widget.extend({
       node = new NodeLayer();
       data.url = self.getImageURL(mapData.max_ms_no);
       data.ms = self._msNumber;
+      data.character_settings = self.node_settings.character_settings;
       node.build(data);
       node.setTouchEnabled(true);
       if (self._msNumber <= mapData.max_ms_no) {
