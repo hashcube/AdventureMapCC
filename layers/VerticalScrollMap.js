@@ -1,5 +1,5 @@
 /* global cc, ccui, VerticalScrollMap: true,
-  MAP_CONSTANTS: true
+  MAP_CONSTANTS: true, LevelIndicator
  */
 
 MAP_CONSTANTS = {
@@ -11,6 +11,7 @@ MAP_CONSTANTS = {
 VerticalScrollMap = ccui.ScrollView.extend({
   map_children: [],
   map_position: null,
+  player_navigator: null,
   ctor: function () {
     'use strict';
 
@@ -159,6 +160,15 @@ VerticalScrollMap = ccui.ScrollView.extend({
       this.map_children[i].setVisible(true);
     }
     this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
+  },
+
+  buildLevelNavigator: function (parent, node_settings) {
+    'use strict';
+
+    var player_navigator = this.player_navigator = new LevelIndicator();
+
+    player_navigator.build(parent, node_settings);
+    parent.addChild(player_navigator);
   },
 
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {

@@ -101,7 +101,8 @@ TileLayer = ccui.Widget.extend({
     'use strict';
 
     var node, data,
-     self = this;
+      self = this,
+      node_settings = self.node_settings;
 
     parent.removeAllChildren();
     data = self.checkInArray(mapData.nodes, tile_number);
@@ -110,12 +111,15 @@ TileLayer = ccui.Widget.extend({
       node = new NodeLayer();
       data.url = self.getImageURL(mapData.max_ms_no);
       data.ms = self._msNumber;
-      data.character_settings = self.node_settings.character_settings;
+      data.character_settings = node_settings.character_settings;
       node.build(data);
       node.setTouchEnabled(true);
       if (self._msNumber <= mapData.max_ms_no) {
         node.addTouchEventListener(_.bind(self.onMilestoneSelected, self
         ), node);
+      }
+      if (self._msNumber === mapData.max_ms_no) {
+        self.map.buildLevelNavigator(node, node_settings);
       }
       parent.addChild(node);
     }
@@ -159,7 +163,10 @@ TileLayer = ccui.Widget.extend({
 
     if (type === ccui.Widget.TOUCH_ENDED) {
       ms_number = target.milestone;
-      cc.eventManager.dispatchCustomEvent('ms_selected', {ms: ms_number});
+      cc.eventManager.dispatchCustomEvent('ms_selected', {
+        ms: ms_number,
+        node: target
+      });
       self.map.map_position = self.map.getInnerContainerPosition();
     }
   },
