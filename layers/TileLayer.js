@@ -129,9 +129,10 @@ TileLayer = ccui.Widget.extend({
     'use strict';
 
     var self = this,
-      nodes = self.node_settings.nodes,
+      node_settings = self.node_settings,
+      nodes = node_settings.nodes,
       ms = self._msNumber,
-      stars = 0,
+      stars = node_settings.star_data[ms],
       url;
 
     url = ms <= max_ms ? nodes[stars].image :

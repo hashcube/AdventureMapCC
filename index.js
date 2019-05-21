@@ -26,6 +26,7 @@ AdventureMapLayer = cc.Layer.extend({
       this.data_path + 'settings/node_settings.json'
     );
     node_settings.fb_data = opts.fb_data;
+    node_settings.star_data = opts.star_data;
     tile_config = cc.loader.getRes(this.data_path + 'tile_config.json');
     cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
       res[node_settings.node_img]
