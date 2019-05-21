@@ -1,6 +1,6 @@
-/* global cc, ccui, facebook, LevelIndicator: true
+/* global cc, ccui, facebook, LevelNavigator: true
 */
-LevelIndicator = ccui.Widget.extend({
+LevelNavigator = ccui.Widget.extend({
   node_settings: null,
   ctor: function () {
     'use strict';

@@ -1,5 +1,5 @@
 /* global cc, ccui, VerticalScrollMap: true,
-  MAP_CONSTANTS: true, LevelIndicator
+  MAP_CONSTANTS: true, LevelNavigator
  */
 
 MAP_CONSTANTS = {
@@ -165,7 +165,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
   buildLevelNavigator: function (parent, node_settings) {
     'use strict';
 
-    var player_navigator = this.player_navigator = new LevelIndicator();
+    var player_navigator = this.player_navigator = new LevelNavigator();
 
     player_navigator.build(parent, node_settings);
     parent.addChild(player_navigator);
