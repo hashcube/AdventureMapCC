@@ -117,9 +117,9 @@ TileLayer = ccui.Widget.extend({
       if (self._msNumber <= mapData.max_ms_no) {
         node.addTouchEventListener(_.bind(self.onMilestoneSelected, self
         ), node);
-      }
-      if (self._msNumber === mapData.max_ms_no) {
-        self.map.buildLevelNavigator(node, node_settings);
+        if (self._msNumber === mapData.max_ms_no) {
+          self.map.buildLevelNavigator(node, node_settings);
+        }
       }
       parent.addChild(node);
     }
