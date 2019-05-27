@@ -7,7 +7,7 @@ CONTAINER_TAG = 0;
 TileLayer = ccui.Widget.extend({
   map_idx: -1,
   row_idx: -1,
-  prev_max_ms: -1,
+  prev_map_max_range: -1,
   tile_map: '',
   hor_size: null,
   map_data: null,
@@ -149,7 +149,7 @@ TileLayer = ccui.Widget.extend({
 
     ms_in_map = mapData.nodes.length * mapData.repeat;
     ms = data.node + mapData.nodes.length * self.map_idx;
-    ms_number = self.prev_max_ms + ms;
+    ms_number = self.prev_map_max_range + ms;
     if (ms_number === mapData.max_ms_no) {
       map.setFocusChild(self);
     }

@@ -65,7 +65,7 @@ AdventureMapLayer = cc.Layer.extend({
           horLayout.tile_map = tile;
           horLayout.map_idx = i - 1;
           horLayout.row_idx = j;
-          horLayout.prev_max_ms = range ? range.min - 1 : 0;
+          horLayout.prev_map_max_range = range ? range.min - 1 : 0;
           horLayout.setVisible(false);
           horLayout.build(mapData, map, node_settings);
           map.addChild(horLayout);
