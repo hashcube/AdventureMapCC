@@ -77,9 +77,12 @@ AdventureMapLayer = cc.Layer.extend({
   onMSSelected: function (evt) {
     'use strict';
 
-    var params = evt.getUserData();
+    var params = evt.getUserData(),
+      node = params.node;
 
-    this.scrollableMap.player_navigator.reposition(params.node);
+    if (node) {
+      this.scrollableMap.player_navigator.reposition(node);
+    }
   },
 
   createMapWithTile: function (index) {
