@@ -6,6 +6,7 @@ LevelNavigator = ccui.Widget.extend({
     'use strict';
 
     this._super();
+    this.retain();
     return true;
   },
 
@@ -39,7 +40,6 @@ LevelNavigator = ccui.Widget.extend({
   reposition: function (parent) {
     'use strict';
 
-    this.retain();
     this.removeFromParent();
     parent.addChild(this);
   },
