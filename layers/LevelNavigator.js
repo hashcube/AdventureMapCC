@@ -14,10 +14,9 @@ LevelNavigator = ccui.Widget.extend({
     'use strict';
 
     var self = this,
-      size = parent.getContentSize();
+      size = this.size = parent.getContentSize();
 
     self.node_settings = node_settings;
-    self.setPosition(cc.p(size.width * 0.5, size.height * 0.5));
     self.setContentSize(size);
     self.refresh(node_settings.fb_data.img_url);
   },
@@ -81,6 +80,7 @@ LevelNavigator = ccui.Widget.extend({
     'use strict';
 
     this._super();
+    this.setPosition(cc.p(this.size.width * 0.5, this.size.height * 0.5));
     this.addAnimation();
   }
 });
