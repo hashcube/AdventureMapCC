@@ -117,7 +117,7 @@ AdventureMapLayer = cc.Layer.extend({
   findNodeByMSNumber: function (ms) {
     'use strict';
 
-    var nodes = this.getAllNodesInMap(),
+    var nodes = this.getAllVisibleNodesInMap(),
       i;
 
     for (i = 0; i < nodes.length; i++) {
@@ -127,7 +127,7 @@ AdventureMapLayer = cc.Layer.extend({
     }
   },
 
-  getAllNodesInMap: function () {
+  getAllVisibleNodesInMap: function () {
     'use strict';
 
     var i, j, tile_layer, len, tile, tiles, node,
@@ -157,7 +157,7 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var self = this,
-      nodes_in_map = self.getAllNodesInMap(),
+      nodes_in_map = self.getAllVisibleNodesInMap(),
       star_data = opts.star_data,
       max_ms = opts.max_ms_no;
 
