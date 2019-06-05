@@ -1,8 +1,6 @@
-/* global cc, ccui, CONTAINER_TAG: true,
-  TileLayer: true, NodeLayer
- */
-
-CONTAINER_TAG = 0;
+/* global cc, ccui, TileLayer: true, NodeLayer,
+  ADV_MAP_CONTAINER_TAG: true, ADV_MAP_NODE_TAG: true
+*/
 
 TileLayer = ccui.Widget.extend({
   map_idx: -1,
@@ -60,7 +58,7 @@ TileLayer = ccui.Widget.extend({
       self = this;
 
     tile_layer = cc.pool.getFromPool(TileLayer);
-    container = tile_layer.getChildByTag(CONTAINER_TAG);
+    container = tile_layer.getChildByTag(ADV_MAP_CONTAINER_TAG);
     container.retain();
     container.removeFromParent();
     self.addChild(container);
@@ -86,7 +84,7 @@ TileLayer = ccui.Widget.extend({
     container.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
     container.setContentSize(self.hor_size);
     self.addChild(container);
-    container.setTag(CONTAINER_TAG);
+    container.setTag(ADV_MAP_CONTAINER_TAG);
     prev_tiles_added = self.row_idx * mapData.rowLength;
     for (j = 0; j < mapData.rowLength; j++) {
       url = self.tile_map + '_' + self.row_idx + '_' + j + '.png';
@@ -115,7 +113,7 @@ TileLayer = ccui.Widget.extend({
       data.node_settings = node_settings;
       node.build(data);
       node.setTouchEnabled(true);
-      node.setTag('NODE_TAG');
+      node.setTag(ADV_MAP_NODE_TAG);
       parent.addChild(node);
     }
   },
@@ -147,7 +145,7 @@ TileLayer = ccui.Widget.extend({
   getTiles: function () {
     'use strict';
 
-    return this.getChildByTag(CONTAINER_TAG).getChildren();
+    return this.getChildByTag(ADV_MAP_CONTAINER_TAG).getChildren();
   },
 
   unuse: function () {

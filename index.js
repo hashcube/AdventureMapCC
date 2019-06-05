@@ -1,6 +1,11 @@
 /* global cc, VerticalScrollMap, TileLayer,
-  AdventureMapLayer: true, res
+  AdventureMapLayer: true, res, ADV_MAP_CONTAINER_TAG: true,
+  ADV_MAP_NODE_TAG: true, ADV_MAP_NODE_IMAGE_TAG: true
  */
+
+ADV_MAP_CONTAINER_TAG = 0;
+ADV_MAP_NODE_TAG = 1;
+ADV_MAP_NODE_IMAGE_TAG = 2;
 
 AdventureMapLayer = cc.Layer.extend({
   data_path: '',
@@ -138,7 +143,7 @@ AdventureMapLayer = cc.Layer.extend({
       tiles = tile_layer.getTiles();
       for (j = 0; j < len; j++) {
         tile = tiles[j];
-        node = tile.getChildByTag('NODE_TAG');
+        node = tile.getChildByTag(ADV_MAP_NODE_TAG);
         if (node) {
           nodes.push(node);
         }

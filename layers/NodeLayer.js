@@ -1,4 +1,4 @@
-/* global cc, ccui,
+/* global cc, ccui, ADV_MAP_NODE_IMAGE_TAG: true,
   NodeLayer: true, res
  */
 
@@ -27,7 +27,7 @@ NodeLayer = ccui.Widget.extend({
     url = self.getImageURL(max_ms);
 
     node_image = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
-    node_image.setTag('NODE_IMAGE_TAG');
+    node_image.setTag(ADV_MAP_NODE_IMAGE_TAG);
     node_size = node_image.getContentSize();
     node_pos = cc.p(node_size.width * 0.5, node_size.height * 0.5);
 
@@ -97,7 +97,7 @@ NodeLayer = ccui.Widget.extend({
     'use strict';
 
     var self = this,
-      node_img = self.getChildByTag('NODE_IMAGE_TAG'),
+      node_img = self.getChildByTag(ADV_MAP_NODE_IMAGE_TAG),
       url;
 
     self.node_settings.star_data = star_data;
