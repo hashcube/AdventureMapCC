@@ -22,7 +22,7 @@ LevelNavigator = ccui.Widget.extend({
     self.refresh(node_settings.fb_data.img_url);
   },
 
-  addIndicatorWithImage: function (texture, size) {
+  addNavigatorWithImage: function (texture, size) {
     'use strict';
 
     var player_image, frame,
@@ -53,13 +53,13 @@ LevelNavigator = ccui.Widget.extend({
     if (cc.sys.isNative && facebook.isLoggedIn() && imageUrl) {
       cc.textureCache.addImageAsync(imageUrl, function (texture) {
         if (texture instanceof cc.Texture2D) {
-          self.addIndicatorWithImage(texture, size);
+          self.addNavigatorWithImage(texture, size);
         } else {
-          self.addIndicatorWithImage(self.node_settings.no_profile, size);
+          self.addNavigatorWithImage(self.node_settings.no_profile, size);
         }
       }, self);
     } else {
-      self.addIndicatorWithImage(self.node_settings.no_profile, size);
+      self.addNavigatorWithImage(self.node_settings.no_profile, size);
     }
   }
 });

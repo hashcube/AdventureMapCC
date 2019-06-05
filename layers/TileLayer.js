@@ -30,7 +30,7 @@ TileLayer = ccui.Widget.extend({
     var self = this,
       horSize = self.hor_size;
 
-    self.map = map;
+    self.scrollable_map = map;
     self.node_settings = node_settings;
     self.setContentSize(horSize);
     self.generateTileLayer(mapData);
@@ -109,42 +109,22 @@ TileLayer = ccui.Widget.extend({
     if (data) {
       self.setMilestone(data, mapData);
       node = new NodeLayer();
-      data.url = self.getImageURL(mapData.max_ms_no);
+      data.max_ms = mapData.max_ms_no;
       data.ms = self._msNumber;
-      data.character_settings = node_settings.character_settings;
+      data.scrollable_map = self.scrollable_map;
+      data.node_settings = node_settings;
       node.build(data);
       node.setTouchEnabled(true);
-      if (self._msNumber <= mapData.max_ms_no) {
-        node.addTouchEventListener(_.bind(self.onMilestoneSelected, self
-        ), node);
-        if (self._msNumber === mapData.max_ms_no) {
-          self.map.buildLevelNavigator(node, node_settings);
-        }
-      }
+      node.setTag('NODE_TAG');
       parent.addChild(node);
     }
-  },
-
-  getImageURL: function (max_ms) {
-    'use strict';
-
-    var self = this,
-      node_settings = self.node_settings,
-      nodes = node_settings.nodes,
-      ms = self._msNumber,
-      stars = node_settings.star_data[ms],
-      url;
-
-    url = ms <= max_ms ? nodes[stars].image :
-      nodes[nodes.length - 1].image;
-    return url;
   },
 
   setMilestone: function (data, mapData) {
     'use strict';
 
     var self = this,
-      map = self.map,
+      map = self.scrollable_map,
       ms_in_map, ms, ms_number;
 
     ms_in_map = mapData.nodes.length * mapData.repeat;
@@ -156,28 +136,18 @@ TileLayer = ccui.Widget.extend({
     self._msNumber = ms_number;
   },
 
-  onMilestoneSelected: function (target, type) {
-    'use strict';
-
-    var ms_number,
-      self = this;
-
-    if (type === ccui.Widget.TOUCH_ENDED) {
-      ms_number = target.milestone;
-      cc.eventManager.dispatchCustomEvent('ms_selected', {
-        ms: ms_number,
-        node: target
-      });
-      self.map.map_position = self.map.getInnerContainerPosition();
-    }
-  },
-
   checkInArray: function (array, condition) {
     'use strict';
 
     return _.find(array, function (obj) {
       return obj.map === condition;
     });
+  },
+
+  getTiles: function () {
+    'use strict';
+
+    return this.getChildByTag(CONTAINER_TAG).getChildren();
   },
 
   unuse: function () {

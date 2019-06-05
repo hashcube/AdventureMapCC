@@ -5,6 +5,7 @@
 AdventureMapLayer = cc.Layer.extend({
   data_path: '',
   max_ms: 0,
+  node_settings: null,
   ctor: function () {
     'use strict';
 
@@ -18,43 +19,45 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var tile_config, node_settings,
-      map = this.scrollableMap,
-      max_ms_no = this.max_ms = opts.max_ms;
+      self = this,
+      map = self.scrollableMap,
+      max_ms_no = self.max_ms = opts.max_ms;
 
-    this.data_path = opts.data_path;
+    self.data_path = opts.data_path;
     node_settings = cc.loader.getRes(
-      this.data_path + 'settings/node_settings.json'
+      self.data_path + 'settings/node_settings.json'
     );
     node_settings.fb_data = opts.fb_data;
     node_settings.star_data = opts.star_data;
-    tile_config = cc.loader.getRes(this.data_path + 'tile_config.json');
+    tile_config = cc.loader.getRes(self.data_path + 'tile_config.json');
     cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
       res[node_settings.node_img]
     );
 
-    this.initializeMap(tile_config, max_ms_no, node_settings);
+    self.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
-    this.addChild(map);
+    self.addChild(map);
 
     // Event listener for milestone clicked
     cc.eventManager.addCustomListener('ms_selected',
-      this.onMSSelected.bind(this));
+      self.onMSSelected.bind(self));
   },
 
   initializeMap: function (tile_config, max_ms_no, node_settings) {
     'use strict';
 
     var i, j, k, tileData, tile, repeat, mapData,
-      horLayout, map, colLength, range;
+      horLayout, map, colLength, range,
+      self = this;
 
     for (k = 0; k < tile_config.length; k++) {
       tileData = tile_config[k];
       tile = tileData.tile_id;
       repeat = tileData.repeat;
       range = tileData.range;
-      map = this.scrollableMap;
+      map = self.scrollableMap;
 
-      mapData = cc.loader.getRes(this.data_path + tile + '.json');
+      mapData = cc.loader.getRes(self.data_path + tile + '.json');
       mapData.max_ms_no = max_ms_no;
       cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
       colLength = mapData.colLength;
@@ -78,7 +81,8 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var params = evt.getUserData(),
-      node = params.node;
+      ms = params.ms,
+      node = this.findNodeByMSNumber(ms);
 
     if (node) {
       this.scrollableMap.player_navigator.reposition(node);
@@ -99,9 +103,61 @@ AdventureMapLayer = cc.Layer.extend({
     horLayout.reCreateTileLayer(mapData);
   },
 
-  refreshMap: function (url) {
+  setPlayerNavigator: function (url) {
     'use strict';
 
     this.scrollableMap.player_navigator.refresh(url);
+  },
+
+  findNodeByMSNumber: function (ms) {
+    'use strict';
+
+    var nodes = this.getAllNodesInMap(),
+      i;
+
+    for (i = 0; i < nodes.length; i++) {
+      if (nodes[i].getMilestone() === ms) {
+        return nodes[i];
+      }
+    }
+  },
+
+  getAllNodesInMap: function () {
+    'use strict';
+
+    var i, j, tile_layer, len, tile, tiles, node,
+      nodes = [],
+      map = this.scrollableMap,
+      children = map.map_children,
+      child_max = map.getBottomChildIndex(),
+      child_min = map.getTopChildIndex();
+
+    for (i = child_min; i <= child_max; i++) {
+      tile_layer = children[i];
+      len = tile_layer.getTiles().length;
+      tiles = tile_layer.getTiles();
+      for (j = 0; j < len; j++) {
+        tile = tiles[j];
+        node = tile.getChildByTag('NODE_TAG');
+        if (node) {
+          nodes.push(node);
+        }
+      }
+    }
+
+    return nodes;
+  },
+
+  refreshMap: function (opts) {
+    'use strict';
+
+    var self = this,
+      nodes_in_map = self.getAllNodesInMap(),
+      star_data = opts.star_data,
+      max_ms = opts.max_ms_no;
+
+    _.each(nodes_in_map, _.bind(function (node) {
+      node.refreshNode(max_ms, star_data);
+    }, self));
   }
 });
