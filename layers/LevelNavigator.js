@@ -37,6 +37,20 @@ LevelNavigator = ccui.Widget.extend({
     self.addChild(frame);
   },
 
+  addAnimation: function () {
+    'use strict';
+
+    var timeInSecs = 3,
+      distInPixels = 15,
+      moveUp = cc.moveBy(timeInSecs,
+        cc.p(0, distInPixels)).easing(cc.easeInOut(2.0)),
+      moveDown = cc.moveBy(timeInSecs,
+        cc.p(0, -distInPixels)).easing(cc.easeInOut(2.0)),
+      seq = cc.sequence(moveUp, moveDown);
+
+    this.runAction(seq.repeatForever());
+  },
+
   reposition: function (parent) {
     'use strict';
 
@@ -61,5 +75,12 @@ LevelNavigator = ccui.Widget.extend({
     } else {
       self.addNavigatorWithImage(self.node_settings.no_profile, size);
     }
+  },
+
+  onEnter: function () {
+    'use strict';
+
+    this._super();
+    this.addAnimation();
   }
 });
