@@ -164,5 +164,8 @@ AdventureMapLayer = cc.Layer.extend({
     _.each(nodes_in_map, _.bind(function (node) {
       node.refreshNode(max_ms, star_data);
     }, self));
+    if (opts.fb_picture_url) {
+      this.setPlayerNavigator(opts.fb_picture_url);
+    }
   }
 });
