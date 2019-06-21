@@ -153,19 +153,40 @@ AdventureMapLayer = cc.Layer.extend({
     return nodes;
   },
 
+  cycleThroughMap: function (max_ms) {
+    'use strict';
+
+    var map = this.scrollableMap,
+      i = 0,
+      tileLayer;
+
+    cc.log('length', map.map_children.length);
+    for (i = 0; i < map.map_children.length; i++) {
+      tileLayer = map.map_children[i];
+      if (tileLayer.msNumber === max_ms) {
+        map.setFocusChild(tileLayer);
+      } else if (tileLayer.hasContainer()) {
+        cc.pool.putInPool(tileLayer);
+      }
+    }
+    map.jumpToVisibleArea();
+  },
+
   refreshMap: function (opts) {
     'use strict';
 
     var self = this,
-      nodes_in_map = self.getAllVisibleNodesInMap(),
+      nodes_in_map,
       star_data = opts.star_data,
-      max_ms = opts.max_ms_no;
+      max_ms = self.max_ms = opts.max_ms_no;
 
+    self.cycleThroughMap(max_ms);
+    nodes_in_map = self.getAllVisibleNodesInMap();
     _.each(nodes_in_map, _.bind(function (node) {
       node.refreshNode(max_ms, star_data);
     }, self));
     if (opts.fb_picture_url) {
-      this.setPlayerNavigator(opts.fb_picture_url);
+      self.setPlayerNavigator(opts.fb_picture_url);
     }
   }
 });

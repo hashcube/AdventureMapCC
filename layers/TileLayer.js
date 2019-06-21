@@ -3,6 +3,7 @@
 */
 
 TileLayer = ccui.Widget.extend({
+  msNumber: 0,
   map_idx: -1,
   row_idx: -1,
   prev_map_max_range: -1,
@@ -108,7 +109,7 @@ TileLayer = ccui.Widget.extend({
       self.setMilestone(data, mapData);
       node = new NodeLayer();
       data.max_ms = mapData.max_ms_no;
-      data.ms = self._msNumber;
+      data.ms = self.msNumber;
       data.scrollable_map = self.scrollable_map;
       data.node_settings = node_settings;
       node.build(data);
@@ -131,7 +132,7 @@ TileLayer = ccui.Widget.extend({
     if (ms_number === mapData.max_ms_no) {
       map.setFocusChild(self);
     }
-    self._msNumber = ms_number;
+    self.msNumber = ms_number;
   },
 
   checkInArray: function (array, condition) {
@@ -146,6 +147,12 @@ TileLayer = ccui.Widget.extend({
     'use strict';
 
     return this.getChildByTag(ADV_MAP_CONTAINER_TAG).getChildren();
+  },
+
+  hasContainer: function () {
+    'use strict';
+
+    return !!this.getChildByTag(ADV_MAP_CONTAINER_TAG);
   },
 
   unuse: function () {
