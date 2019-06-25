@@ -74,13 +74,13 @@ TileLayer = ccui.Widget.extend({
     }
   },
 
-  createTileLayer: function (mapData) {
+  createTileLayer: function () {
     'use strict';
 
-    var tile, j, url, container, tile_added, prev_tiles_added,
+    var tile, j, url, container, tile_added, prev_tiles_added, mapData,
       self = this;
 
-    mapData = mapData || self.map_data;
+    mapData = self.map_data;
     container = new ccui.Layout();
     container.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
     container.setContentSize(self.hor_size);

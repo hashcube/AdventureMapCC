@@ -134,7 +134,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
     }
   },
 
-  jumpToVisibleArea: function () {
+  jumpToVisibleArea: function (afterSync) {
     'use strict';
 
     var percent, i, buffer, tileLayer,
@@ -157,13 +157,13 @@ VerticalScrollMap = ccui.ScrollView.extend({
     percent = focus_index / last_child_idx * 100;
     self.jumpToPercentVertical(percent);
     for (i = top_visible_idx; i <= bottom_visible_idx; i++) {
-      tileLayer = self.map_children[i];
-      if (tileLayer.hasContainer()) {
+      if (afterSync) {
         self.getParent().createMapWithTile(i);
       } else {
+        tileLayer = self.map_children[i];
         tileLayer.createTileLayer();
+        tileLayer.setVisible(true);
       }
-      tileLayer.setVisible(true);
     }
     self.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
   },

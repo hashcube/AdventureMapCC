@@ -17,6 +17,8 @@ AdventureMapLayer = cc.Layer.extend({
     this._super();
     this.scrollableMap = new VerticalScrollMap();
 
+    _.bindAll(this, 'refreshMap');
+
     return true;
   },
 
@@ -153,23 +155,23 @@ AdventureMapLayer = cc.Layer.extend({
     return nodes;
   },
 
-  cycleThroughMap: function (max_ms) {
+  cycleThroughMap: function (max_ms, star_data) {
     'use strict';
 
     var map = this.scrollableMap,
       i = 0,
       tileLayer;
 
-    cc.log('length', map.map_children.length);
     for (i = 0; i < map.map_children.length; i++) {
       tileLayer = map.map_children[i];
+      tileLayer.node_settings.star_data = star_data;
       if (tileLayer.msNumber === max_ms) {
         map.setFocusChild(tileLayer);
       } else if (tileLayer.hasContainer()) {
         cc.pool.putInPool(tileLayer);
       }
     }
-    map.jumpToVisibleArea();
+    map.jumpToVisibleArea(true);
   },
 
   refreshMap: function (opts) {
@@ -180,7 +182,7 @@ AdventureMapLayer = cc.Layer.extend({
       star_data = opts.star_data,
       max_ms = self.max_ms = opts.max_ms_no;
 
-    self.cycleThroughMap(max_ms);
+    self.cycleThroughMap(max_ms, star_data);
     nodes_in_map = self.getAllVisibleNodesInMap();
     _.each(nodes_in_map, _.bind(function (node) {
       node.refreshNode(max_ms, star_data);
