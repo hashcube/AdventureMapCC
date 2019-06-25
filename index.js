@@ -177,18 +177,17 @@ AdventureMapLayer = cc.Layer.extend({
   refreshMap: function (opts) {
     'use strict';
 
-    var self = this,
-      nodes_in_map,
+    var nodes_in_map,
       star_data = opts.star_data,
-      max_ms = self.max_ms = opts.max_ms_no;
+      max_ms = this.max_ms = opts.max_ms_no;
 
-    self.cycleThroughMap(max_ms, star_data);
-    nodes_in_map = self.getAllVisibleNodesInMap();
+    this.cycleThroughMap(max_ms, star_data);
+    nodes_in_map = this.getAllVisibleNodesInMap();
     _.each(nodes_in_map, _.bind(function (node) {
       node.refreshNode(max_ms, star_data);
-    }, self));
+    }, this));
     if (opts.fb_picture_url) {
-      self.setPlayerNavigator(opts.fb_picture_url);
+      this.setPlayerNavigator(opts.fb_picture_url);
     }
   }
 });
