@@ -138,11 +138,10 @@ VerticalScrollMap = ccui.ScrollView.extend({
     'use strict';
 
     var percent, i, buffer, tileLayer,
-      self = this,
-      focus_index = self.getChildIndex(self.getFocusChild()),
+      focus_index = this.getChildIndex(this.getFocusChild()),
       bottom_visible_idx = focus_index + 20,
       top_visible_idx = focus_index - 20,
-      last_child_idx = self.map_children.length - 1;
+      last_child_idx = this.map_children.length - 1;
 
     if (top_visible_idx < 0) {
       buffer = Math.abs(top_visible_idx);
@@ -155,17 +154,17 @@ VerticalScrollMap = ccui.ScrollView.extend({
     }
 
     percent = focus_index / last_child_idx * 100;
-    self.jumpToPercentVertical(percent);
+    this.jumpToPercentVertical(percent);
     for (i = top_visible_idx; i <= bottom_visible_idx; i++) {
       if (afterSync) {
-        self.getParent().createMapWithTile(i);
+        this.getParent().createMapWithTile(i);
       } else {
-        tileLayer = self.map_children[i];
+        tileLayer = this.map_children[i];
         tileLayer.createTileLayer();
         tileLayer.setVisible(true);
       }
     }
-    self.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
+    this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
   },
 
   buildLevelNavigator: function (parent, node_settings) {

@@ -15,7 +15,7 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     this._super();
-    this.scrollableMap = new VerticalScrollMap();
+    this.scrollable_map = new VerticalScrollMap();
 
     _.bindAll(this, 'refreshMap');
 
@@ -27,7 +27,7 @@ AdventureMapLayer = cc.Layer.extend({
 
     var tile_config, node_settings,
       self = this,
-      map = self.scrollableMap,
+      map = self.scrollable_map,
       max_ms_no = self.max_ms = opts.max_ms;
 
     self.data_path = opts.data_path;
@@ -53,32 +53,32 @@ AdventureMapLayer = cc.Layer.extend({
   initializeMap: function (tile_config, max_ms_no, node_settings) {
     'use strict';
 
-    var i, j, k, tileData, tile, repeat, mapData,
-      horLayout, map, colLength, range,
+    var i, j, k, tile_data, tile, repeat, map_data,
+      hor_layout, map, col_length, range,
       self = this;
 
     for (k = 0; k < tile_config.length; k++) {
-      tileData = tile_config[k];
-      tile = tileData.tile_id;
-      repeat = tileData.repeat;
-      range = tileData.range;
-      map = self.scrollableMap;
+      tile_data = tile_config[k];
+      tile = tile_data.tile_id;
+      repeat = tile_data.repeat;
+      range = tile_data.range;
+      map = self.scrollable_map;
 
-      mapData = cc.loader.getRes(self.data_path + tile + '.json');
-      mapData.max_ms_no = max_ms_no;
+      map_data = cc.loader.getRes(self.data_path + tile + '.json');
+      map_data.max_ms_no = max_ms_no;
       cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
-      colLength = mapData.colLength;
+      col_length = map_data.colLength;
 
       for (i = repeat; i > 0; i--) {
-        for (j = 0; j < colLength; j++) {
-          horLayout = new TileLayer(mapData);
-          horLayout.tile_map = tile;
-          horLayout.map_idx = i - 1;
-          horLayout.row_idx = j;
-          horLayout.prev_map_max_range = range ? range.min - 1 : 0;
-          horLayout.setVisible(false);
-          horLayout.build(mapData, map, node_settings);
-          map.addChild(horLayout);
+        for (j = 0; j < col_length; j++) {
+          hor_layout = new TileLayer(map_data);
+          hor_layout.tile_map = tile;
+          hor_layout.map_idx = i - 1;
+          hor_layout.row_idx = j;
+          hor_layout.prev_map_max_range = range ? range.min - 1 : 0;
+          hor_layout.setVisible(false);
+          hor_layout.build(map_data, map, node_settings);
+          map.addChild(hor_layout);
         }
       }
     }
@@ -92,28 +92,28 @@ AdventureMapLayer = cc.Layer.extend({
       node = this.findNodeByMSNumber(ms);
 
     if (node) {
-      this.scrollableMap.player_navigator.reposition(node);
+      this.scrollable_map.player_navigator.reposition(node);
     }
   },
 
   createMapWithTile: function (index) {
     'use strict';
 
-    var horLayout, mapData,
+    var hor_layout, map_data,
       self = this,
-      map = self.scrollableMap;
+      map = self.scrollable_map;
 
-    horLayout = map.map_children[index];
-    horLayout.setVisible(true);
-    mapData = cc.loader.getRes(self.data_path + horLayout.tile_map + '.json');
-    mapData.max_ms_no = self.max_ms;
-    horLayout.reCreateTileLayer(mapData);
+    hor_layout = map.map_children[index];
+    hor_layout.setVisible(true);
+    map_data = cc.loader.getRes(self.data_path + hor_layout.tile_map + '.json');
+    map_data.max_ms_no = self.max_ms;
+    hor_layout.reCreateTileLayer(map_data);
   },
 
   setPlayerNavigator: function (url) {
     'use strict';
 
-    this.scrollableMap.player_navigator.refresh(url);
+    this.scrollable_map.player_navigator.refresh(url);
   },
 
   findNodeByMSNumber: function (ms) {
@@ -134,7 +134,7 @@ AdventureMapLayer = cc.Layer.extend({
 
     var i, j, tile_layer, len, tile, tiles, node,
       nodes = [],
-      map = this.scrollableMap,
+      map = this.scrollable_map,
       children = map.map_children,
       child_max = map.getBottomChildIndex(),
       child_min = map.getTopChildIndex();
@@ -158,14 +158,14 @@ AdventureMapLayer = cc.Layer.extend({
   cycleThroughMap: function (max_ms, star_data) {
     'use strict';
 
-    var map = this.scrollableMap,
+    var map = this.scrollable_map,
       i = 0,
       tileLayer;
 
     for (i = 0; i < map.map_children.length; i++) {
       tileLayer = map.map_children[i];
       tileLayer.node_settings.star_data = star_data;
-      if (tileLayer.msNumber === max_ms) {
+      if (tileLayer.ms_number === max_ms) {
         map.setFocusChild(tileLayer);
       } else if (tileLayer.hasContainer()) {
         cc.pool.putInPool(tileLayer);
