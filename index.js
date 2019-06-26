@@ -55,12 +55,12 @@ AdventureMapLayer = cc.Layer.extend({
     var i, j, k, tile_data, tile, repeat, map_data,
       hor_layout, map, col_length, range;
 
+    map = this.scrollable_map;
     for (k = 0; k < tile_config.length; k++) {
       tile_data = tile_config[k];
       tile = tile_data.tile_id;
       repeat = tile_data.repeat;
       range = tile_data.range;
-      map = this.scrollable_map;
 
       map_data = cc.loader.getRes(this.data_path + tile + '.json');
       map_data.max_ms_no = max_ms_no;
@@ -129,7 +129,7 @@ AdventureMapLayer = cc.Layer.extend({
   getAllVisibleNodesInMap: function () {
     'use strict';
 
-    var i, j, tile_layer, len, tile, tiles, node,
+    var i, tile_layer, node,
       nodes = [],
       map = this.scrollable_map,
       children = map.map_children,
@@ -138,37 +138,38 @@ AdventureMapLayer = cc.Layer.extend({
 
     for (i = child_min; i <= child_max; i++) {
       tile_layer = children[i];
-      len = tile_layer.getTiles().length;
-      tiles = tile_layer.getTiles();
-      for (j = 0; j < len; j++) {
-        tile = tiles[j];
-        node = tile.getChildByTag(ADV_MAP_NODE_TAG);
-        if (node) {
-          nodes.push(node);
-        }
+      node = tile_layer.getNode();
+      if (node) {
+        nodes.push(node);
       }
     }
 
     return nodes;
   },
 
-  cycleThroughMap: function (max_ms, star_data) {
+  cycleThroughMap: function (curr_ms, star_data) {
     'use strict';
 
     var map = this.scrollable_map,
       i = 0,
-      tileLayer;
+      tileLayer, focus_child, node;
 
     for (i = 0; i < map.map_children.length; i++) {
       tileLayer = map.map_children[i];
       tileLayer.node_settings.star_data = star_data;
-      if (tileLayer.ms_number === max_ms) {
+      if (tileLayer.ms_number === curr_ms) {
         map.setFocusChild(tileLayer);
-      } else if (tileLayer.hasContainer()) {
+      }
+      if (tileLayer.hasContainer()) {
         cc.pool.putInPool(tileLayer);
       }
     }
     map.jumpToVisibleArea();
+    focus_child = map.getFocusChild();
+    node = focus_child.getNode();
+    if (node) {
+      map.player_navigator.reposition(node);
+    }
   },
 
   refreshMap: function (opts) {
@@ -176,9 +177,10 @@ AdventureMapLayer = cc.Layer.extend({
 
     var nodes_in_map,
       star_data = opts.star_data,
-      max_ms = this.max_ms = opts.max_ms_no;
+      max_ms = this.max_ms = opts.max_ms_no,
+      curr_ms = opts.curr_ms_no;
 
-    this.cycleThroughMap(max_ms, star_data);
+    this.cycleThroughMap(curr_ms, star_data);
     nodes_in_map = this.getAllVisibleNodesInMap();
     _.each(nodes_in_map, _.bind(function (node) {
       node.refreshNode(max_ms, star_data);

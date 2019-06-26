@@ -45,6 +45,9 @@ TileLayer = ccui.Widget.extend({
       data = this.checkInArray(map_data.nodes, tile_added);
       if (data) {
         this.setMilestone(data, map_data);
+        if (this.ms_number === map_data.max_ms_no) {
+          this.scrollable_map.setFocusChild(this);
+        }
       }
     }
   },
@@ -53,7 +56,7 @@ TileLayer = ccui.Widget.extend({
     'use strict';
 
     var tile, url, i, container, tile_added, prev_tiles_added,
-      tile_layer;
+      tile_layer, tile_map, row_idx;
 
     tile_layer = cc.pool.getFromPool(TileLayer);
     container = tile_layer.getChildByTag(ADV_MAP_CONTAINER_TAG);
@@ -62,10 +65,12 @@ TileLayer = ccui.Widget.extend({
     this.addChild(container);
 
     prev_tiles_added = this.row_idx * map_data.rowLength;
+    tile_map = this.tile_map;
+    row_idx = this.row_idx;
     for (i = 0; i < container.getChildrenCount(); i++) {
       tile = container.getChildren()[i];
       tile_added = prev_tiles_added + i;
-      url = this.tile_map + '_' + this.row_idx + '_' + i + '.png';
+      url = tile_map + '_' + row_idx + '_' + i + '.png';
       tile.loadTexture(url, ccui.Widget.PLIST_TEXTURE);
       this.setNode(map_data, tile_added, tile);
     }
@@ -74,7 +79,8 @@ TileLayer = ccui.Widget.extend({
   createTileLayer: function () {
     'use strict';
 
-    var tile, j, url, container, tile_added, prev_tiles_added, map_data;
+    var tile, j, url, container, tile_added, prev_tiles_added, map_data,
+      tile_map, row_idx;
 
     map_data = this.map_data;
     container = new ccui.Layout();
@@ -83,8 +89,10 @@ TileLayer = ccui.Widget.extend({
     this.addChild(container);
     container.setTag(ADV_MAP_CONTAINER_TAG);
     prev_tiles_added = this.row_idx * map_data.rowLength;
+    tile_map = this.tile_map;
+    row_idx = this.row_idx;
     for (j = 0; j < map_data.rowLength; j++) {
-      url = this.tile_map + '_' + this.row_idx + '_' + j + '.png';
+      url = tile_map + '_' + row_idx + '_' + j + '.png';
       tile_added = prev_tiles_added + j;
       tile = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
       this.setNode(map_data, tile_added, tile);
@@ -117,15 +125,11 @@ TileLayer = ccui.Widget.extend({
   setMilestone: function (data, map_data) {
     'use strict';
 
-    var map = this.scrollable_map,
-      ms_in_map, ms, ms_number;
+    var ms_in_map, ms, ms_number;
 
     ms_in_map = map_data.nodes.length * map_data.repeat;
     ms = data.node + map_data.nodes.length * this.map_idx;
     ms_number = this.prev_map_max_range + ms;
-    if (ms_number === map_data.max_ms_no) {
-      map.setFocusChild(this);
-    }
     this.ms_number = ms_number;
   },
 
@@ -141,6 +145,22 @@ TileLayer = ccui.Widget.extend({
     'use strict';
 
     return this.getChildByTag(ADV_MAP_CONTAINER_TAG).getChildren();
+  },
+
+  getNode: function () {
+    'use strict';
+
+    var tiles = this.getTiles(),
+      tile, j, node;
+
+    for (j = 0; j < tiles.length; j++) {
+      tile = tiles[j];
+      node = tile.getChildByTag(ADV_MAP_NODE_TAG);
+      if (node) {
+        return node;
+      }
+    }
+    return null;
   },
 
   hasContainer: function () {

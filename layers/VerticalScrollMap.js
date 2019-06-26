@@ -1,5 +1,5 @@
 /* global cc, ccui, VerticalScrollMap: true,
-  MAP_CONSTANTS: true, LevelNavigator
+  MAP_CONSTANTS: true, LevelNavigator, TileLayer
  */
 
 MAP_CONSTANTS = {
@@ -154,7 +154,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
     this.jumpToPercentVertical(percent);
     for (i = top_visible_idx; i <= bottom_visible_idx; i++) {
       tileLayer = this.map_children[i];
-      if (tileLayer.hasContainer()) {
+      if (cc.pool.hasObject(TileLayer)) {
         this.getParent().createMapWithTile(i);
       } else {
         tileLayer.createTileLayer();
@@ -167,10 +167,14 @@ VerticalScrollMap = ccui.ScrollView.extend({
   buildLevelNavigator: function (parent, node_settings) {
     'use strict';
 
-    var player_navigator = this.player_navigator = new LevelNavigator();
+    var player_navigator = this.player_navigator;
 
-    player_navigator.build(parent, node_settings);
-    parent.addChild(player_navigator);
+    if (!player_navigator) {
+      player_navigator = new LevelNavigator();
+      player_navigator.build(parent, node_settings);
+      parent.addChild(player_navigator);
+      this.player_navigator = player_navigator;
+    }
   },
 
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {
