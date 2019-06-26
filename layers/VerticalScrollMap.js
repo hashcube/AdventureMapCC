@@ -41,46 +41,43 @@ VerticalScrollMap = ccui.ScrollView.extend({
   checkTopBoundary: function () {
     'use strict';
 
-    var self = this,
-      top_view_item = self.getTopmostItemInCurrentView(),
+    var top_view_item = this.getTopmostItemInCurrentView(),
       top_view_item_height = top_view_item.getContentSize().height,
-      top_visible_item = self.map_children[self.getTopChildIndex()],
+      top_visible_item = this.map_children[this.getTopChildIndex()],
       top_distance = top_visible_item.y - top_view_item.y,
       dist_checker = MAP_CONSTANTS.DIST_CHECK_CONST * top_view_item_height;
 
     if (top_distance < dist_checker) {
-      self.addChildToMap(MAP_CONSTANTS.POS_TOP);
+      this.addChildToMap(MAP_CONSTANTS.POS_TOP);
     }
   },
 
   checkBottomBoundary: function () {
     'use strict';
 
-    var self = this,
-      bottom_view_item = self.getBottommostItemInCurrentView(),
+    var bottom_view_item = this.getBottommostItemInCurrentView(),
       bottom_view_item_height = bottom_view_item.getContentSize().height,
-      bottom_visible_item = self.map_children[self.getBottomChildIndex()],
+      bottom_visible_item = this.map_children[this.getBottomChildIndex()],
       bottom_distance = bottom_view_item.y - bottom_visible_item.y,
       dist_checker = MAP_CONSTANTS.DIST_CHECK_CONST * bottom_view_item_height;
 
     if (bottom_distance < dist_checker) {
-      self.addChildToMap(MAP_CONSTANTS.POS_BOTTOM);
+      this.addChildToMap(MAP_CONSTANTS.POS_BOTTOM);
     }
   },
 
   onScroll: function (event, type) {
     'use strict';
 
-    var start_pos, end_pos,
-      self = this;
+    var start_pos, end_pos;
 
     if (type === ccui.ScrollView.EVENT_CONTAINER_MOVED) {
       start_pos = event.getTouchBeganPosition().y;
       end_pos = event.getTouchEndPosition().y;
       if (start_pos - end_pos > 0) {
-        self.checkTopBoundary();
+        this.checkTopBoundary();
       } else {
-        self.checkBottomBoundary();
+        this.checkBottomBoundary();
       }
     }
   },
@@ -179,37 +176,34 @@ VerticalScrollMap = ccui.ScrollView.extend({
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {
     'use strict';
 
-    var self = this;
-
-    self.setTopChildIndex(top_visible_idx);
-    self.setBottomChildIndex(bottom_visible_idx);
+    this.setTopChildIndex(top_visible_idx);
+    this.setBottomChildIndex(bottom_visible_idx);
   },
 
   addChildToMap: function (pos) {
     'use strict';
 
-    var self = this,
-      add_index, remove_index;
+    var add_index, remove_index;
 
     if (pos === MAP_CONSTANTS.POS_TOP) {
-      add_index = self.getTopChildIndex() - 1;
+      add_index = this.getTopChildIndex() - 1;
       if (add_index < 0) {
         return;
       }
-      self.setTopChildIndex(add_index);
-      remove_index = self.getBottomChildIndex();
-      self.setBottomChildIndex(remove_index - 1);
+      this.setTopChildIndex(add_index);
+      remove_index = this.getBottomChildIndex();
+      this.setBottomChildIndex(remove_index - 1);
     } else {
-      add_index = self.getBottomChildIndex() + 1;
-      if (add_index >= self.getChildrenCount()) {
+      add_index = this.getBottomChildIndex() + 1;
+      if (add_index >= this.getChildrenCount()) {
         return;
       }
-      self.setBottomChildIndex(add_index);
-      remove_index = self.getTopChildIndex();
-      self.setTopChildIndex(remove_index + 1);
+      this.setBottomChildIndex(add_index);
+      remove_index = this.getTopChildIndex();
+      this.setTopChildIndex(remove_index + 1);
     }
-    cc.pool.putInPool(self.map_children[remove_index]);
-    self.getParent().createMapWithTile(add_index);
+    cc.pool.putInPool(this.map_children[remove_index]);
+    this.getParent().createMapWithTile(add_index);
   },
 
   getTopmostItemInCurrentView: function () {
@@ -234,15 +228,14 @@ VerticalScrollMap = ccui.ScrollView.extend({
       childAnchorPoint) {
     'use strict';
 
-    var self = this,
-      contentSize, targetPosition;
+    var contentSize, targetPosition;
 
-    contentSize = self.getContentSize();
-    targetPosition = cc.pMult(self.getInnerContainerPosition(), -1);
+    contentSize = this.getContentSize();
+    targetPosition = cc.pMult(this.getInnerContainerPosition(), -1);
     targetPosition.x += contentSize.width * positionRatioInView.x;
     targetPosition.y += contentSize.height * positionRatioInView.y;
 
-    return self.getClosestItemToPosition(targetPosition, childAnchorPoint);
+    return this.getClosestItemToPosition(targetPosition, childAnchorPoint);
   },
 
   getClosestItemToPosition: function (targetPosition, childAnchorPoint) {
@@ -250,8 +243,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     var firstIndex, firstPosition, distanceFromFirst, lastIndex, lastPosition,
       distanceFromLast,
-      self = this,
-      children = self.map_children;
+      children = this.map_children;
 
     if (children.length === 0) {
       return null;
@@ -259,20 +251,20 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     // Find the closest item through binary search
     firstIndex = 0;
-    firstPosition = self._calculateChildPositionWithAnchor(
+    firstPosition = this._calculateChildPositionWithAnchor(
       children[firstIndex],
       childAnchorPoint
     );
     distanceFromFirst = cc.pLength(cc.pSub(targetPosition, firstPosition));
 
     lastIndex = children.length - 1;
-    lastPosition = self._calculateChildPositionWithAnchor(
+    lastPosition = this._calculateChildPositionWithAnchor(
       children[lastIndex],
       childAnchorPoint
     );
     distanceFromLast = cc.pLength(cc.pSub(targetPosition, lastPosition));
 
-    return self._findClosestChild(targetPosition, children, childAnchorPoint,
+    return this._findClosestChild(targetPosition, children, childAnchorPoint,
       firstIndex, distanceFromFirst, lastIndex, distanceFromLast);
   },
 
@@ -292,8 +284,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
       firstIndex, distanceFromFirst, lastIndex, distanceFromLast) {
     'use strict';
 
-    var self = this,
-      midIndex, childPosition, distanceFromMid;
+    var midIndex, childPosition, distanceFromMid;
 
     if (firstIndex === lastIndex) {
       return children[firstIndex];
@@ -308,7 +299,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     // Binary search
     midIndex = Math.floor((firstIndex + lastIndex) / 2);
-    childPosition = self._calculateChildPositionWithAnchor(
+    childPosition = this._calculateChildPositionWithAnchor(
       children[midIndex],
       childAnchorPoint
     );
@@ -316,11 +307,11 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     if (distanceFromFirst <= distanceFromLast) {
       // Left half
-      return self._findClosestChild(targetPosition, children, childAnchorPoint,
+      return this._findClosestChild(targetPosition, children, childAnchorPoint,
         firstIndex, distanceFromFirst, midIndex, distanceFromMid);
     } else {
       // Right half
-      return self._findClosestChild(targetPosition, children, childAnchorPoint,
+      return this._findClosestChild(targetPosition, children, childAnchorPoint,
         midIndex, distanceFromMid, lastIndex, distanceFromLast);
     }
   },

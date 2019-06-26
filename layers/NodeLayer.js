@@ -16,23 +16,22 @@ NodeLayer = ccui.Widget.extend({
 
     var node_pos, node_size, node_image,
       ms_number_text, ms_text_color, ms_stroke_color,
-      self = this,
       max_ms = opts.max_ms,
-      node_settings = self.node_settings = opts.node_settings,
+      node_settings = this.node_settings = opts.node_settings,
       char_settings = node_settings.character_settings,
       url;
 
-    self.milestone = opts.ms;
-    self.scrollable_map = opts.scrollable_map;
-    url = self.getImageURL(max_ms);
+    this.milestone = opts.ms;
+    this.scrollable_map = opts.scrollable_map;
+    url = this.getImageURL(max_ms);
 
     node_image = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
     node_image.setTag(ADV_MAP_NODE_IMAGE_TAG);
     node_size = node_image.getContentSize();
     node_pos = cc.p(node_size.width * 0.5, node_size.height * 0.5);
 
-    self.setContentSize(node_size);
-    self.setPosition(cc.p(opts.x, opts.y));
+    this.setContentSize(node_size);
+    this.setPosition(cc.p(opts.x, opts.y));
 
     ms_number_text = new cc.LabelTTF(opts.ms,
         cc._mGetCustomFontName(res[char_settings.font]));
@@ -45,11 +44,11 @@ NodeLayer = ccui.Widget.extend({
     node_image.addChild(ms_number_text);
 
     node_image.setPosition(node_pos);
-    self.addChild(node_image);
-    if (self.milestone <= max_ms) {
-      self.addOnTouchListener();
-      if (self.milestone === max_ms) {
-        self.scrollable_map.buildLevelNavigator(self, node_settings);
+    this.addChild(node_image);
+    if (this.milestone <= max_ms) {
+      this.addOnTouchListener();
+      if (this.milestone === max_ms) {
+        this.scrollable_map.buildLevelNavigator(this, node_settings);
       }
     }
   },
@@ -57,17 +56,14 @@ NodeLayer = ccui.Widget.extend({
   addOnTouchListener: function () {
     'use strict';
 
-    var self = this;
-
-    self.addTouchEventListener(_.bind(self.onMilestoneSelected, self), self);
+    this.addTouchEventListener(_.bind(this.onMilestoneSelected, this), this);
   },
 
   onMilestoneSelected: function (target, type) {
     'use strict';
 
     var ms_number,
-      self = this,
-      map = self.scrollable_map;
+      map = this.scrollable_map;
 
     if (type === ccui.Widget.TOUCH_ENDED) {
       ms_number = target.milestone;
@@ -81,10 +77,9 @@ NodeLayer = ccui.Widget.extend({
   getImageURL: function (max_ms) {
     'use strict';
 
-    var self = this,
-      node_settings = self.node_settings,
+    var node_settings = this.node_settings,
       nodes = node_settings.nodes,
-      ms = self.milestone,
+      ms = this.milestone,
       stars = node_settings.star_data[ms],
       url;
 
@@ -96,15 +91,14 @@ NodeLayer = ccui.Widget.extend({
   refreshNode: function (max_ms, star_data) {
     'use strict';
 
-    var self = this,
-      node_img = self.getChildByTag(ADV_MAP_NODE_IMAGE_TAG),
+    var node_img = this.getChildByTag(ADV_MAP_NODE_IMAGE_TAG),
       url;
 
-    self.node_settings.star_data = star_data;
-    url = self.getImageURL(max_ms);
+    this.node_settings.star_data = star_data;
+    url = this.getImageURL(max_ms);
     node_img.loadTexture(url, ccui.Widget.PLIST_TEXTURE);
-    if (self.milestone <= max_ms) {
-      self.addOnTouchListener();
+    if (this.milestone <= max_ms) {
+      this.addOnTouchListener();
     }
   },
 

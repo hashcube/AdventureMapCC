@@ -26,45 +26,43 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var tile_config, node_settings,
-      self = this,
-      map = self.scrollable_map,
-      max_ms_no = self.max_ms = opts.max_ms;
+      map = this.scrollable_map,
+      max_ms_no = this.max_ms = opts.max_ms;
 
-    self.data_path = opts.data_path;
+    this.data_path = opts.data_path;
     node_settings = cc.loader.getRes(
-      self.data_path + 'settings/node_settings.json'
+      this.data_path + 'settings/node_settings.json'
     );
     node_settings.fb_data = opts.fb_data;
     node_settings.star_data = opts.star_data;
-    tile_config = cc.loader.getRes(self.data_path + 'tile_config.json');
+    tile_config = cc.loader.getRes(this.data_path + 'tile_config.json');
     cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
       res[node_settings.node_img]
     );
 
-    self.initializeMap(tile_config, max_ms_no, node_settings);
+    this.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
-    self.addChild(map);
+    this.addChild(map);
 
     // Event listener for milestone clicked
     cc.eventManager.addCustomListener('ms_selected',
-      self.onMSSelected.bind(self));
+      this.onMSSelected.bind(this));
   },
 
   initializeMap: function (tile_config, max_ms_no, node_settings) {
     'use strict';
 
     var i, j, k, tile_data, tile, repeat, map_data,
-      hor_layout, map, col_length, range,
-      self = this;
+      hor_layout, map, col_length, range;
 
     for (k = 0; k < tile_config.length; k++) {
       tile_data = tile_config[k];
       tile = tile_data.tile_id;
       repeat = tile_data.repeat;
       range = tile_data.range;
-      map = self.scrollable_map;
+      map = this.scrollable_map;
 
-      map_data = cc.loader.getRes(self.data_path + tile + '.json');
+      map_data = cc.loader.getRes(this.data_path + tile + '.json');
       map_data.max_ms_no = max_ms_no;
       cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
       col_length = map_data.colLength;
@@ -100,13 +98,12 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var hor_layout, map_data,
-      self = this,
-      map = self.scrollable_map;
+      map = this.scrollable_map;
 
     hor_layout = map.map_children[index];
     hor_layout.setVisible(true);
-    map_data = cc.loader.getRes(self.data_path + hor_layout.tile_map + '.json');
-    map_data.max_ms_no = self.max_ms;
+    map_data = cc.loader.getRes(this.data_path + hor_layout.tile_map + '.json');
+    map_data.max_ms_no = this.max_ms;
     hor_layout.reCreateTileLayer(map_data);
   },
 
