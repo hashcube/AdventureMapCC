@@ -102,7 +102,7 @@ AdventureMapLayer = cc.Layer.extend({
 
     hor_layout = map.map_children[index];
     hor_layout.setVisible(true);
-    map_data = cc.loader.getRes(this.data_path + hor_layout.tile_map + '.json');
+    map_data = hor_layout.map_data;
     map_data.max_ms_no = this.max_ms;
     hor_layout.reCreateTileLayer(map_data);
   },
