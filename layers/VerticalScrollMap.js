@@ -153,10 +153,10 @@ VerticalScrollMap = ccui.ScrollView.extend({
     percent = focus_index / last_child_idx * 100;
     this.jumpToPercentVertical(percent);
     for (i = top_visible_idx; i <= bottom_visible_idx; i++) {
-      tileLayer = this.map_children[i];
       if (cc.pool.hasObject(TileLayer)) {
         this.getParent().createMapWithTile(i);
       } else {
+        tileLayer = this.map_children[i];
         tileLayer.createTileLayer();
         tileLayer.setVisible(true);
       }
