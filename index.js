@@ -171,7 +171,7 @@ AdventureMapLayer = cc.Layer.extend({
         cc.pool.putInPool(tileLayer);
       }
     }
-    map.jumpToVisibleArea(true);
+    map.jumpToVisibleArea();
   },
 
   refreshMap: function (opts) {
