@@ -47,9 +47,6 @@ NodeLayer = ccui.Widget.extend({
     this.addChild(node_image);
     if (this.milestone <= max_ms) {
       this.addOnTouchListener();
-      if (this.milestone === max_ms) {
-        this.scrollable_map.buildLevelNavigator(this, node_settings);
-      }
     }
   },
 

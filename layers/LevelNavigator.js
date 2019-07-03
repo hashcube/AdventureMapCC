@@ -18,7 +18,6 @@ LevelNavigator = ccui.Widget.extend({
 
     self.node_settings = node_settings;
     self.setContentSize(size);
-    self.refresh(node_settings.fb_data.img_url);
   },
 
   addNavigatorWithImage: function (texture, size) {
@@ -28,10 +27,11 @@ LevelNavigator = ccui.Widget.extend({
       self = this;
 
     self.removeAllChildren();
-    player_image = new cc.Sprite(texture);
+    player_image = new ccui.ImageView(texture, ccui.Widget.PLIST_TEXTURE);
     player_image.setPosition(cc.p(0, size.height));
     self.addChild(player_image);
-    frame = new cc.Sprite(self.node_settings.player_frame);
+    frame = new ccui.ImageView(self.node_settings.player_frame,
+      ccui.Widget.PLIST_TEXTURE);
     frame.setPosition(cc.p(size.width * 0.5 - 50, size.height * 0.5 + 45));
     self.addChild(frame);
   },
@@ -57,22 +57,23 @@ LevelNavigator = ccui.Widget.extend({
     parent.addChild(this);
   },
 
-  refresh: function (imageUrl) {
+  refresh: function (uid) {
     'use strict';
 
-    var self = this,
-      size = self.getContentSize();
+    var size = this.getContentSize();
 
-    if (cc.sys.isNative && facebook.isLoggedIn() && imageUrl) {
-      cc.textureCache.addImageAsync(imageUrl, function (texture) {
-        if (texture instanceof cc.Texture2D) {
-          self.addNavigatorWithImage(texture, size);
-        } else {
-          self.addNavigatorWithImage(self.node_settings.no_profile, size);
-        }
-      }, self);
+    this.removeAllChildren();
+    if (cc.sys.isNative && facebook.isLoggedIn() && uid) {
+      facebook.addFBProfilePic({
+        parent: this,
+        uid: uid,
+        size: cc.size(50, 50),
+        frame_url: this.node_settings.player_frame,
+        image_pos: cc.p(0, size.height),
+        frame_pos: cc.p(size.width * 0.5 - 50, size.height * 0.5 + 45)
+      });
     } else {
-      self.addNavigatorWithImage(self.node_settings.no_profile, size);
+      this.addNavigatorWithImage(this.node_settings.no_profile, size);
     }
   },
 

@@ -30,10 +30,10 @@ AdventureMapLayer = cc.Layer.extend({
       max_ms_no = this.max_ms = opts.max_ms;
 
     this.data_path = opts.data_path;
-    node_settings = cc.loader.getRes(
+    node_settings = this.node_settings = cc.loader.getRes(
       this.data_path + 'settings/node_settings.json'
     );
-    node_settings.fb_data = opts.fb_data;
+    this.fb_data = opts.fb_data;
     node_settings.star_data = opts.star_data;
     tile_config = cc.loader.getRes(this.data_path + 'tile_config.json');
     cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
@@ -47,6 +47,10 @@ AdventureMapLayer = cc.Layer.extend({
     // Event listener for milestone clicked
     cc.eventManager.addCustomListener('ms_selected',
       this.onMSSelected.bind(this));
+
+    // Event listener map built
+    cc.eventManager.addCustomListener('adv_map_built',
+      _.bind(this.onMapBuilt, this));
   },
 
   initializeMap: function (tile_config, max_ms_no, node_settings) {
@@ -82,6 +86,18 @@ AdventureMapLayer = cc.Layer.extend({
     }
   },
 
+  onMapBuilt: function (evt) {
+    'use strict';
+
+    var player_node = this.findNodeByMSNumber(this.max_ms),
+      node_settings = this.node_settings,
+      map = this.scrollable_map;
+
+    if (player_node) {
+      map.buildPlayerLevelNavigator(player_node, node_settings);
+    }
+  },
+
   onMSSelected: function (evt) {
     'use strict';
 
@@ -107,10 +123,10 @@ AdventureMapLayer = cc.Layer.extend({
     hor_layout.reCreateTileLayer(map_data);
   },
 
-  setPlayerNavigator: function (url) {
+  resetPlayerNavigator: function (uid) {
     'use strict';
 
-    this.scrollable_map.player_navigator.refresh(url);
+    this.scrollable_map.player_navigator.refresh(uid);
   },
 
   findNodeByMSNumber: function (ms) {
@@ -185,8 +201,8 @@ AdventureMapLayer = cc.Layer.extend({
     _.each(nodes_in_map, _.bind(function (node) {
       node.refreshNode(max_ms, star_data);
     }, this));
-    if (opts.fb_picture_url) {
-      this.setPlayerNavigator(opts.fb_picture_url);
+    if (opts.uid) {
+      this.resetPlayerNavigator(opts.uid);
     }
   }
 });

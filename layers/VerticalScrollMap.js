@@ -162,18 +162,21 @@ VerticalScrollMap = ccui.ScrollView.extend({
       }
     }
     this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
+
+    // dispatch map built
+    cc.eventManager.dispatchCustomEvent('adv_map_built');
   },
 
-  buildLevelNavigator: function (parent, node_settings) {
+  buildPlayerLevelNavigator: function (parent, node_settings) {
     'use strict';
 
-    var player_navigator = this.player_navigator;
+    var player_uid = this.getParent().fb_data.uid;
 
-    if (!player_navigator) {
-      player_navigator = new LevelNavigator();
-      player_navigator.build(parent, node_settings);
-      parent.addChild(player_navigator);
-      this.player_navigator = player_navigator;
+    if (!this.player_navigator) {
+      this.player_navigator = new LevelNavigator();
+      this.player_navigator.build(parent, node_settings);
+      this.player_navigator.refresh(player_uid);
+      parent.addChild(this.player_navigator);
     }
   },
 
