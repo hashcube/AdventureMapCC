@@ -11,7 +11,6 @@ MAP_CONSTANTS = {
 VerticalScrollMap = ccui.ScrollView.extend({
   map_children: [],
   map_position: null,
-  player_navigator: null,
   ctor: function () {
     'use strict';
 
@@ -165,19 +164,6 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     // dispatch map built
     cc.eventManager.dispatchCustomEvent('adv_map_built');
-  },
-
-  buildPlayerLevelNavigator: function (parent, node_settings) {
-    'use strict';
-
-    var player_uid = this.getParent().fb_data.uid;
-
-    if (!this.player_navigator) {
-      this.player_navigator = new LevelNavigator();
-      this.player_navigator.build(parent, node_settings);
-      this.player_navigator.refresh(player_uid);
-      parent.addChild(this.player_navigator);
-    }
   },
 
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {

@@ -11,6 +11,7 @@ AdventureMapLayer = cc.Layer.extend({
   data_path: '',
   max_ms: 0,
   node_settings: null,
+  player_navigator: null,
   ctor: function () {
     'use strict';
 
@@ -94,7 +95,39 @@ AdventureMapLayer = cc.Layer.extend({
       map = this.scrollable_map;
 
     if (player_node) {
-      map.buildPlayerLevelNavigator(player_node, node_settings);
+      this.buildPlayerLevelNavigator(player_node, node_settings);
+    }
+  },
+
+  buildFriendsPlayerNavigator: function (friends_data) {
+    'use strict';
+
+    var node, friend_navigator,
+      node_settings = this.node_settings;
+
+    _.each(friends_data, _.bind(function (ms, uid) {
+      if (ms <= 1300) {
+        node = this.findNodeByMSNumber(ms);
+        if (node) {
+          friend_navigator = new LevelNavigator(true);
+          friend_navigator.build(node, node_settings);
+          friend_navigator.refresh(uid);
+          node.addNavigator(friend_navigator);
+        }
+      }
+    }, this));
+  },
+
+  buildPlayerLevelNavigator: function (parent, node_settings) {
+    'use strict';
+
+    var player_uid = this.fb_data.uid;
+
+    if (!this.player_navigator) {
+      this.player_navigator = new LevelNavigator();
+      this.player_navigator.build(parent, node_settings);
+      this.player_navigator.refresh(player_uid);
+      parent.addNavigator(this.player_navigator);
     }
   },
 
@@ -106,7 +139,7 @@ AdventureMapLayer = cc.Layer.extend({
       node = this.findNodeByMSNumber(ms);
 
     if (node) {
-      this.scrollable_map.player_navigator.reposition(node);
+      this.player_navigator.reposition(node);
     }
   },
 
@@ -126,7 +159,7 @@ AdventureMapLayer = cc.Layer.extend({
   resetPlayerNavigator: function (uid) {
     'use strict';
 
-    this.scrollable_map.player_navigator.refresh(uid);
+    this.player_navigator.refresh(uid);
   },
 
   findNodeByMSNumber: function (ms) {
@@ -184,7 +217,7 @@ AdventureMapLayer = cc.Layer.extend({
     focus_child = map.getFocusChild();
     node = focus_child.getNode();
     if (node) {
-      map.player_navigator.reposition(node);
+      this.player_navigator.reposition(node);
     }
   },
 
@@ -204,5 +237,6 @@ AdventureMapLayer = cc.Layer.extend({
     if (opts.uid) {
       this.resetPlayerNavigator(opts.uid);
     }
+    this.buildFriendsPlayerNavigator(HelperUtil.parse(opts.friends_data));
   }
 });

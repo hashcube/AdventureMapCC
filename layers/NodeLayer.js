@@ -4,10 +4,12 @@
 
 NodeLayer = ccui.Widget.extend({
   milestone: -1,
+  navigator_array: null,
   ctor: function () {
     'use strict';
 
     this._super();
+    this.navigator_array = [];
     return true;
   },
 
@@ -103,5 +105,24 @@ NodeLayer = ccui.Widget.extend({
     'use strict';
 
     return this.milestone;
+  },
+
+  addNavigator: function (player_navigator) {
+    'use strict';
+
+    var nav_array = this.navigator_array,
+      prev_nav, prev_nav_pos,
+      new_nav_pos = cc.p(player_navigator.size.width * 0.5,
+        player_navigator.size.height * 0.5);
+
+    if (nav_array.length > 0) {
+      prev_nav = nav_array[nav_array.length - 1];
+      prev_nav_pos = prev_nav.getPosition();
+      new_nav_pos.x = prev_nav_pos.x +
+        prev_nav.getContentSize().width * 0.25;
+    }
+    player_navigator.setPosition(new_nav_pos);
+    this.navigator_array.push(player_navigator);
+    this.addChild(player_navigator);
   }
 });

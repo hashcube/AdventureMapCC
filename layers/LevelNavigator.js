@@ -2,38 +2,37 @@
 */
 LevelNavigator = ccui.Widget.extend({
   node_settings: null,
-  ctor: function () {
+  ctor: function (is_friend) {
     'use strict';
 
     this._super();
     this.retain();
+    this.is_friend = !!is_friend;
     return true;
   },
 
   build: function (parent, node_settings) {
     'use strict';
 
-    var self = this,
-      size = this.size = parent.getContentSize();
+    var size = this.size = parent.getContentSize();
 
-    self.node_settings = node_settings;
-    self.setContentSize(size);
+    this.node_settings = node_settings;
+    this.setContentSize(size);
   },
 
   addNavigatorWithImage: function (texture, size) {
     'use strict';
 
-    var player_image, frame,
-      self = this;
+    var player_image, frame;
 
-    self.removeAllChildren();
+    this.removeAllChildren();
     player_image = new ccui.ImageView(texture, ccui.Widget.PLIST_TEXTURE);
     player_image.setPosition(cc.p(0, size.height));
-    self.addChild(player_image);
-    frame = new ccui.ImageView(self.node_settings.player_frame,
+    this.addChild(player_image);
+    frame = new ccui.ImageView(this.node_settings.player_frame,
       ccui.Widget.PLIST_TEXTURE);
     frame.setPosition(cc.p(size.width * 0.5 - 50, size.height * 0.5 + 45));
-    self.addChild(frame);
+    this.addChild(frame);
   },
 
   addAnimation: function () {
@@ -60,17 +59,27 @@ LevelNavigator = ccui.Widget.extend({
   refresh: function (uid) {
     'use strict';
 
-    var size = this.getContentSize();
+    var size = this.getContentSize(),
+      frame_url, image_size, frame_pos;
 
+    if (this.is_friend) {
+      frame_url = this.node_settings.friend_frame;
+      image_size = cc.size(40, 40);
+      frame_pos = cc.p(size.width * 0.5 - 55, size.height * 0.5 + 49);
+    } else {
+      frame_url = this.node_settings.player_frame;
+      image_size = cc.size(50, 50);
+      frame_pos = cc.p(size.width * 0.5 - 50, size.height * 0.5 + 45);
+    }
     this.removeAllChildren();
     if (cc.sys.isNative && facebook.isLoggedIn() && uid) {
       facebook.addFBProfilePic({
         parent: this,
         uid: uid,
-        size: cc.size(50, 50),
-        frame_url: this.node_settings.player_frame,
+        size: image_size,
+        frame_url: frame_url,
         image_pos: cc.p(0, size.height),
-        frame_pos: cc.p(size.width * 0.5 - 50, size.height * 0.5 + 45)
+        frame_pos: frame_pos
       });
     } else {
       this.addNavigatorWithImage(this.node_settings.no_profile, size);
@@ -81,7 +90,6 @@ LevelNavigator = ccui.Widget.extend({
     'use strict';
 
     this._super();
-    this.setPosition(cc.p(this.size.width * 0.5, this.size.height * 0.5));
     this.addAnimation();
   }
 });
