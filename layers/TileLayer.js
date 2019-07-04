@@ -60,9 +60,6 @@ TileLayer = ccui.Widget.extend({
 
     tile_layer = cc.pool.getFromPool(TileLayer);
     container = tile_layer.getChildByTag(ADV_MAP_CONTAINER_TAG);
-    container.retain();
-    container.removeFromParent();
-    this.addChild(container);
 
     prev_tiles_added = this.row_idx * map_data.rowLength;
     tile_map = this.tile_map;
@@ -74,6 +71,10 @@ TileLayer = ccui.Widget.extend({
       tile.loadTexture(url, ccui.Widget.PLIST_TEXTURE);
       this.setNode(map_data, tile_added, tile);
     }
+
+    container.retain();
+    container.removeFromParent();
+    this.addChild(container);
   },
 
   createTileLayer: function () {
@@ -110,7 +111,7 @@ TileLayer = ccui.Widget.extend({
     data = this.checkInArray(map_data.nodes, tile_number);
     if (data) {
       this.setMilestone(data, map_data);
-      node = new NodeLayer();
+      node = new NodeLayer(this);
       data.max_ms = map_data.max_ms_no;
       data.ms = this.ms_number;
       data.scrollable_map = this.scrollable_map;

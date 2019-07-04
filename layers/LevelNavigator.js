@@ -49,11 +49,11 @@ LevelNavigator = ccui.Widget.extend({
     this.runAction(seq.repeatForever());
   },
 
-  reposition: function (parent) {
+  reposition: function (node) {
     'use strict';
 
     this.removeFromParent();
-    parent.addChild(this);
+    node.addNavigator(this);
   },
 
   refresh: function (uid) {

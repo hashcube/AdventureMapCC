@@ -13,6 +13,7 @@ AdventureMapLayer = cc.Layer.extend({
   max_ms: 0,
   node_settings: null,
   player_navigator: null,
+  tile_config: null,
   ctor: function () {
     'use strict';
 
@@ -37,7 +38,8 @@ AdventureMapLayer = cc.Layer.extend({
     );
     this.fb_data = opts.fb_data;
     node_settings.star_data = opts.star_data;
-    tile_config = cc.loader.getRes(this.data_path + 'tile_config.json');
+    tile_config = this.tile_config = cc.loader.getRes(this.data_path +
+      'tile_config.json');
     cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
       res[node_settings.node_img]
     );
@@ -48,7 +50,7 @@ AdventureMapLayer = cc.Layer.extend({
 
     // Event listener for milestone clicked
     cc.eventManager.addCustomListener('ms_selected',
-      this.onMSSelected.bind(this));
+      _.bind(this.onMSSelected, this));
 
     // Event listener map built
     cc.eventManager.addCustomListener('adv_map_built',
@@ -106,7 +108,7 @@ AdventureMapLayer = cc.Layer.extend({
       node_settings = this.node_settings;
 
     _.each(friends_data, _.bind(function (ms, uid) {
-      if (ms <= 1300) {
+      if (ms <= this.tile_config[1].range.max) {
         node = this.findNodeByMSNumber(ms);
         if (node) {
           friend_navigator = new LevelNavigator(true);

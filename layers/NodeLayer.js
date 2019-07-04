@@ -5,11 +5,13 @@
 NodeLayer = ccui.Widget.extend({
   milestone: -1,
   navigator_array: null,
-  ctor: function () {
+  tile_layer: null,
+  ctor: function (tile_layer) {
     'use strict';
 
     this._super();
     this.navigator_array = [];
+    this.tile_layer = tile_layer;
     return true;
   },
 
@@ -115,7 +117,7 @@ NodeLayer = ccui.Widget.extend({
       new_nav_pos = cc.p(player_navigator.size.width * 0.5,
         player_navigator.size.height * 0.5);
 
-    if (nav_array.length > 0) {
+    if (nav_array.length > 0 && player_navigator.is_friend) {
       prev_nav = nav_array[nav_array.length - 1];
       prev_nav_pos = prev_nav.getPosition();
       new_nav_pos.x = prev_nav_pos.x +
