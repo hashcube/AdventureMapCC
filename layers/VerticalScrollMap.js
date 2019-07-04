@@ -1,5 +1,5 @@
 /* global cc, ccui, VerticalScrollMap: true,
-  MAP_CONSTANTS: true, LevelNavigator, TileLayer
+  MAP_CONSTANTS: true, TileLayer
  */
 
 MAP_CONSTANTS = {

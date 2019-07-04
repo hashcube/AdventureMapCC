@@ -1,6 +1,7 @@
 /* global cc, VerticalScrollMap, TileLayer,
   AdventureMapLayer: true, res, ADV_MAP_CONTAINER_TAG: true,
-  ADV_MAP_NODE_TAG: true, ADV_MAP_NODE_IMAGE_TAG: true
+  ADV_MAP_NODE_TAG: true, ADV_MAP_NODE_IMAGE_TAG: true, LevelNavigator,
+  HelperUtil
  */
 
 ADV_MAP_CONTAINER_TAG = 0;
@@ -87,12 +88,11 @@ AdventureMapLayer = cc.Layer.extend({
     }
   },
 
-  onMapBuilt: function (evt) {
+  onMapBuilt: function () {
     'use strict';
 
     var player_node = this.findNodeByMSNumber(this.max_ms),
-      node_settings = this.node_settings,
-      map = this.scrollable_map;
+      node_settings = this.node_settings;
 
     if (player_node) {
       this.buildPlayerLevelNavigator(player_node, node_settings);
