@@ -125,8 +125,11 @@ VerticalScrollMap = ccui.ScrollView.extend({
     if (this.map_position) {
       this.setInnerContainerPosition(this.map_position);
     } else {
-      this.jumpToVisibleArea();
       this.addEventListener(_.bind(this.onScroll, this));
+      setTimeout(function () {
+        // dispatch map built
+        cc.eventManager.dispatchCustomEvent('adv_map_built');
+      }, 1);
     }
   },
 
@@ -161,9 +164,6 @@ VerticalScrollMap = ccui.ScrollView.extend({
       }
     }
     this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
-
-    // dispatch map built
-    cc.eventManager.dispatchCustomEvent('adv_map_built');
   },
 
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {

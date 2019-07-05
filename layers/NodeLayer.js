@@ -1,5 +1,6 @@
 /* global cc, ccui, ADV_MAP_NODE_IMAGE_TAG: true,
-  NodeLayer: true, res
+  NodeLayer: true, res, ADV_MAP_NAVIGATOR_TAG: true,
+  ADV_MAP_NAVIGATOR_INDEX: true
  */
 
 NodeLayer = ccui.Widget.extend({
@@ -103,19 +104,24 @@ NodeLayer = ccui.Widget.extend({
     }
   },
 
-  getMilestone: function () {
-    'use strict';
-
-    return this.milestone;
-  },
-
   addNavigator: function (player_navigator) {
     'use strict';
 
     var nav_array = this.navigator_array,
-      prev_nav, prev_nav_pos,
+      nav_size = player_navigator.getContentSize(),
+      prev_nav, prev_nav_pos, new_nav_world_pos, new_nav_pos, parent;
+
+    if (player_navigator.is_friend) {
       new_nav_pos = cc.p(player_navigator.size.width * 0.5,
         player_navigator.size.height * 0.5);
+      parent = this;
+    } else {
+      new_nav_world_pos = this.convertToWorldSpace(this.getPosition());
+      new_nav_pos = this.tile_layer.convertToNodeSpace(new_nav_world_pos);
+      new_nav_pos.x += nav_size.height * 0.5;
+      new_nav_pos.y = 90;
+      parent = this.tile_layer;
+    }
 
     if (nav_array.length > 0 && player_navigator.is_friend) {
       prev_nav = nav_array[nav_array.length - 1];
@@ -123,8 +129,9 @@ NodeLayer = ccui.Widget.extend({
       new_nav_pos.x = prev_nav_pos.x +
         prev_nav.getContentSize().width * 0.25;
     }
+    player_navigator.setTag(ADV_MAP_NAVIGATOR_TAG);
     player_navigator.setPosition(new_nav_pos);
     this.navigator_array.push(player_navigator);
-    this.addChild(player_navigator);
+    parent.addChild(player_navigator, ADV_MAP_NAVIGATOR_INDEX);
   }
 });

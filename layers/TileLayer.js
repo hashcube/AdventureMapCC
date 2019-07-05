@@ -1,5 +1,7 @@
 /* global cc, ccui, TileLayer: true, NodeLayer,
-  ADV_MAP_CONTAINER_TAG: true, ADV_MAP_NODE_TAG: true
+  ADV_MAP_CONTAINER_TAG: true, ADV_MAP_NODE_TAG: true,
+  ADV_MAP_NAVIGATOR_TAG: true, ADV_MAP_CONTAINER_INDEX: true,
+  LevelNavigator
 */
 
 TileLayer = ccui.Widget.extend({
@@ -11,6 +13,7 @@ TileLayer = ccui.Widget.extend({
   hor_size: null,
   map_data: null,
   node_settings: null,
+  navigator_data: null,
   ctor: function (map_data) {
     'use strict';
 
@@ -18,6 +21,7 @@ TileLayer = ccui.Widget.extend({
       hor_layout_height = map_data.tileHeight;
 
     this._super();
+    this.navigator_data = [];
     this.hor_size = cc.size(hor_layout_width, hor_layout_height);
     this.map_data = map_data;
     return true;
@@ -74,7 +78,7 @@ TileLayer = ccui.Widget.extend({
 
     container.retain();
     container.removeFromParent();
-    this.addChild(container);
+    this.addChild(container, ADV_MAP_CONTAINER_INDEX);
   },
 
   createTileLayer: function () {
@@ -87,7 +91,7 @@ TileLayer = ccui.Widget.extend({
     container = new ccui.Layout();
     container.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
     container.setContentSize(this.hor_size);
-    this.addChild(container);
+    this.addChild(container, ADV_MAP_CONTAINER_INDEX);
     container.setTag(ADV_MAP_CONTAINER_TAG);
     prev_tiles_added = this.row_idx * map_data.rowLength;
     tile_map = this.tile_map;
@@ -104,7 +108,8 @@ TileLayer = ccui.Widget.extend({
   setNode: function (map_data, tile_number, parent) {
     'use strict';
 
-    var node, data,
+    var node, data, friend_navigator, i,
+      nav_data = this.navigator_data,
       node_settings = this.node_settings;
 
     parent.removeAllChildren();
@@ -120,6 +125,18 @@ TileLayer = ccui.Widget.extend({
       node.setTouchEnabled(true);
       node.setTag(ADV_MAP_NODE_TAG);
       parent.addChild(node);
+
+      if (nav_data.length > 0) {
+        if (this.getChildByTag(ADV_MAP_NAVIGATOR_TAG)) {
+          this.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
+        }
+        for (i = 0; i < nav_data.length; i++) {
+          friend_navigator = new LevelNavigator(true);
+          friend_navigator.build(node, node_settings);
+          friend_navigator.refresh(nav_data[i].uid);
+          node.addNavigator(friend_navigator);
+        }
+      }
     }
   },
 
@@ -132,6 +149,12 @@ TileLayer = ccui.Widget.extend({
     ms = data.node + map_data.nodes.length * this.map_idx;
     ms_number = this.prev_map_max_range + ms;
     this.ms_number = ms_number;
+  },
+
+  saveNavigatorData: function (data) {
+    'use strict';
+
+    this.navigator_data.push(data);
   },
 
   checkInArray: function (array, condition) {

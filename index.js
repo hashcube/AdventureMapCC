@@ -1,12 +1,17 @@
 /* global cc, VerticalScrollMap, TileLayer,
   AdventureMapLayer: true, res, ADV_MAP_CONTAINER_TAG: true,
   ADV_MAP_NODE_TAG: true, ADV_MAP_NODE_IMAGE_TAG: true, LevelNavigator,
-  HelperUtil
+  HelperUtil, ADV_MAP_NAVIGATOR_TAG: true, ADV_MAP_CONTAINER_INDEX: true,
+  ADV_MAP_NAVIGATOR_INDEX: true
  */
 
 ADV_MAP_CONTAINER_TAG = 0;
 ADV_MAP_NODE_TAG = 1;
 ADV_MAP_NODE_IMAGE_TAG = 2;
+ADV_MAP_NAVIGATOR_TAG = 3;
+
+ADV_MAP_CONTAINER_INDEX = 1;
+ADV_MAP_NAVIGATOR_INDEX = 2;
 
 AdventureMapLayer = cc.Layer.extend({
   data_path: '',
@@ -46,6 +51,7 @@ AdventureMapLayer = cc.Layer.extend({
 
     this.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
+    map.jumpToVisibleArea();
     this.addChild(map);
 
     // Event listener for milestone clicked
@@ -101,10 +107,23 @@ AdventureMapLayer = cc.Layer.extend({
     }
   },
 
+  findTileLayerByMSNumber: function (ms) {
+    'use strict';
+
+    var layers = this.scrollable_map.children,
+      i;
+
+    for (i = layers.length - 1; i >= 0; i--) {
+      if (layers[i].ms_number === ms) {
+        return layers[i];
+      }
+    }
+  },
+
   buildFriendsPlayerNavigator: function (friends_data) {
     'use strict';
 
-    var node, friend_navigator,
+    var node, friend_navigator, tile_layer,
       node_settings = this.node_settings;
 
     _.each(friends_data, _.bind(function (ms, uid) {
@@ -114,7 +133,17 @@ AdventureMapLayer = cc.Layer.extend({
           friend_navigator = new LevelNavigator(true);
           friend_navigator.build(node, node_settings);
           friend_navigator.refresh(uid);
+          node.tile_layer.saveNavigatorData({
+            uid: uid
+          });
           node.addNavigator(friend_navigator);
+        } else {
+          tile_layer = this.findTileLayerByMSNumber(ms);
+          if (tile_layer) {
+            tile_layer.saveNavigatorData({
+              uid: uid
+            });
+          }
         }
       }
     }, this));
@@ -171,7 +200,7 @@ AdventureMapLayer = cc.Layer.extend({
       i;
 
     for (i = 0; i < nodes.length; i++) {
-      if (nodes[i].getMilestone() === ms) {
+      if (nodes[i].milestone === ms) {
         return nodes[i];
       }
     }
