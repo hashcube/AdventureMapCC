@@ -1,7 +1,7 @@
 /* global cc, VerticalScrollMap, TileLayer,
   AdventureMapLayer: true, res, ADV_MAP_CONTAINER_TAG: true,
   ADV_MAP_NODE_TAG: true, ADV_MAP_NODE_IMAGE_TAG: true, LevelNavigator,
-  HelperUtil, ADV_MAP_NAVIGATOR_TAG: true, ADV_MAP_CONTAINER_INDEX: true,
+  ADV_MAP_NAVIGATOR_TAG: true, ADV_MAP_CONTAINER_INDEX: true,
   ADV_MAP_NAVIGATOR_INDEX: true
  */
 
@@ -25,7 +25,7 @@ AdventureMapLayer = cc.Layer.extend({
     this._super();
     this.scrollable_map = new VerticalScrollMap();
 
-    _.bindAll(this, 'refreshMap');
+    _.bindAll(this, 'refreshMap', 'onMSSelected', 'onMapBuilt');
 
     return true;
   },
@@ -55,12 +55,10 @@ AdventureMapLayer = cc.Layer.extend({
     this.addChild(map);
 
     // Event listener for milestone clicked
-    cc.eventManager.addCustomListener('ms_selected',
-      _.bind(this.onMSSelected, this));
+    cc.eventManager.addCustomListener('ms_selected', this.onMSSelected);
 
     // Event listener map built
-    cc.eventManager.addCustomListener('adv_map_built',
-      _.bind(this.onMapBuilt, this));
+    cc.eventManager.addCustomListener('adv_map_built', this.onMapBuilt);
   },
 
   initializeMap: function (tile_config, max_ms_no, node_settings) {
@@ -99,12 +97,8 @@ AdventureMapLayer = cc.Layer.extend({
   onMapBuilt: function () {
     'use strict';
 
-    var player_node = this.findNodeByMSNumber(this.max_ms),
-      node_settings = this.node_settings;
-
-    if (player_node) {
-      this.buildPlayerLevelNavigator(player_node, node_settings);
-    }
+    this.buildPlayerLevelNavigator(this.node_settings);
+    this.buildFriendsPlayerNavigator(this.fb_data.friends_data);
   },
 
   findTileLayerByMSNumber: function (ms) {
@@ -120,41 +114,47 @@ AdventureMapLayer = cc.Layer.extend({
     }
   },
 
-  buildFriendsPlayerNavigator: function (friends_data) {
+  buildFriendsPlayerNavigator: function (friends_data, logged_in) {
     'use strict';
 
-    var node, friend_navigator, tile_layer,
+    var node, friend_navigator, tile_layer, nav_data,
       node_settings = this.node_settings;
 
     _.each(friends_data, _.bind(function (ms, uid) {
       if (ms <= this.tile_config[1].range.max) {
         node = this.findNodeByMSNumber(ms);
-        if (node) {
+        nav_data = {
+          uid: uid
+        };
+        if (node && logged_in) {
           friend_navigator = new LevelNavigator(true);
           friend_navigator.build(node, node_settings);
           friend_navigator.refresh(uid);
-          node.tile_layer.saveNavigatorData({
-            uid: uid
-          });
+          node.tile_layer.saveNavigatorData(nav_data);
           node.addNavigator(friend_navigator);
+        } else if (node && !logged_in) {
+          if (node.getChildByTag(ADV_MAP_NAVIGATOR_TAG)) {
+            node.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
+          }
         } else {
           tile_layer = this.findTileLayerByMSNumber(ms);
-          if (tile_layer) {
-            tile_layer.saveNavigatorData({
-              uid: uid
-            });
+          if (tile_layer && logged_in) {
+            tile_layer.saveNavigatorData(nav_data);
+          } else if (tile_layer && !logged_in) {
+            tile_layer.resetNavigatorData();
           }
         }
       }
     }, this));
   },
 
-  buildPlayerLevelNavigator: function (parent, node_settings) {
+  buildPlayerLevelNavigator: function (node_settings) {
     'use strict';
 
-    var player_uid = this.fb_data.uid;
+    var player_uid = this.fb_data.uid,
+      parent = this.findNodeByMSNumber(this.max_ms);
 
-    if (!this.player_navigator) {
+    if (parent && !this.player_navigator) {
       this.player_navigator = new LevelNavigator();
       this.player_navigator.build(parent, node_settings);
       this.player_navigator.refresh(player_uid);
@@ -258,16 +258,18 @@ AdventureMapLayer = cc.Layer.extend({
     var nodes_in_map,
       star_data = opts.star_data,
       max_ms = this.max_ms = opts.max_ms_no,
-      curr_ms = opts.curr_ms_no;
+      curr_ms = opts.curr_ms_no,
+      fb_data = opts.fb_data;
 
     this.cycleThroughMap(curr_ms, star_data);
     nodes_in_map = this.getAllVisibleNodesInMap();
     _.each(nodes_in_map, _.bind(function (node) {
       node.refreshNode(max_ms, star_data);
     }, this));
-    if (opts.uid) {
-      this.resetPlayerNavigator(opts.uid);
+    if (fb_data) {
+      this.fb_data = fb_data;
+      this.resetPlayerNavigator(fb_data.uid);
+      this.buildFriendsPlayerNavigator(fb_data.friends_data, fb_data.status);
     }
-    this.buildFriendsPlayerNavigator(HelperUtil.parse(opts.friends_data));
   }
 });

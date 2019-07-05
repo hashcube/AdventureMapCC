@@ -157,6 +157,12 @@ TileLayer = ccui.Widget.extend({
     this.navigator_data.push(data);
   },
 
+  resetNavigatorData: function () {
+    'use strict';
+
+    this.navigator_data = [];
+  },
+
   checkInArray: function (array, condition) {
     'use strict';
 
