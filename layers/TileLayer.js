@@ -127,9 +127,7 @@ TileLayer = ccui.Widget.extend({
       parent.addChild(node);
 
       if (nav_data.length > 0) {
-        if (this.getChildByTag(ADV_MAP_NAVIGATOR_TAG)) {
-          this.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
-        }
+        this.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
         for (i = 0; i < nav_data.length; i++) {
           friend_navigator = new LevelNavigator(true);
           friend_navigator.build(node, node_settings);

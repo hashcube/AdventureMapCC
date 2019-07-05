@@ -133,9 +133,7 @@ AdventureMapLayer = cc.Layer.extend({
           node.tile_layer.saveNavigatorData(nav_data);
           node.addNavigator(friend_navigator);
         } else if (node && !logged_in) {
-          if (node.getChildByTag(ADV_MAP_NAVIGATOR_TAG)) {
-            node.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
-          }
+          node.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
         } else {
           tile_layer = this.findTileLayerByMSNumber(ms);
           if (tile_layer && logged_in) {
