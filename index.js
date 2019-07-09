@@ -51,7 +51,6 @@ AdventureMapLayer = cc.Layer.extend({
 
     this.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
-    map.jumpToVisibleArea();
     this.addChild(map);
 
     // Event listener for milestone clicked
@@ -98,7 +97,10 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     this.buildPlayerLevelNavigator(this.node_settings);
-    this.buildFriendsPlayerNavigator(this.fb_data.friends_data);
+    if (this.fb_data) {
+      this.buildFriendsPlayerNavigator(this.fb_data.friends_data,
+        this.fb_data.status);
+    }
   },
 
   findTileLayerByMSNumber: function (ms) {
@@ -149,7 +151,7 @@ AdventureMapLayer = cc.Layer.extend({
   buildPlayerLevelNavigator: function (node_settings) {
     'use strict';
 
-    var player_uid = this.fb_data.uid,
+    var player_uid = this.fb_data ? this.fb_data.uid : '',
       parent = this.findNodeByMSNumber(this.max_ms);
 
     if (parent && !this.player_navigator) {

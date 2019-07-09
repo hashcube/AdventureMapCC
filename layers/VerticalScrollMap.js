@@ -125,6 +125,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
     if (this.map_position) {
       this.setInnerContainerPosition(this.map_position);
     } else {
+      this.jumpToVisibleArea();
       this.addEventListener(_.bind(this.onScroll, this));
       setTimeout(function () {
         // dispatch map built
