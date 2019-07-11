@@ -33,18 +33,17 @@ AdventureMapLayer = cc.Layer.extend({
   onEnter: function () {
     'use strict';
 
+    this._super();
+
     // Event listener for milestone clicked
     cc.eventManager.addCustomListener('ms_selected', this.onMSSelected);
-
-    // Event listener map built
-    cc.eventManager.addCustomListener('adv_map_built', this.onMapBuilt);
   },
 
   onExit: function () {
     'use strict';
 
+    this._super();
     cc.eventManager.removeCustomListeners('ms_selected');
-    cc.eventManager.removeCustomListeners('adv_map_built');
   },
 
   build: function (opts) {

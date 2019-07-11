@@ -127,10 +127,9 @@ VerticalScrollMap = ccui.ScrollView.extend({
     } else {
       this.jumpToVisibleArea();
       this.addEventListener(_.bind(this.onScroll, this));
-      setTimeout(function () {
-        // dispatch map built
-        cc.eventManager.dispatchCustomEvent('adv_map_built');
-      }, 1);
+      setTimeout(_.bind(function () {
+        this.getParent().onMapBuilt();
+      }, this), 1);
     }
   },
 
