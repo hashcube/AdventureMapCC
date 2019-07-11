@@ -61,11 +61,11 @@ LevelNavigator = ccui.Widget.extend({
     'use strict';
 
     var old_nav_data = this.tile_layer.navigator_data,
-      cond_func = _.bind(function (data) {
+      cond_func = function (data) {
         if (data) {
-          return data.uid === this.uid;
+          return data.is_friend === false;
         }
-      }, this),
+      },
       new_nav_data, index;
 
     index = _.findIndex(old_nav_data, cond_func);
