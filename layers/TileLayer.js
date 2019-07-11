@@ -1,6 +1,6 @@
 /* global cc, ccui, TileLayer: true, NodeLayer,
   ADV_MAP_CONTAINER_TAG: true, ADV_MAP_NODE_TAG: true,
-  ADV_MAP_NAVIGATOR_TAG: true, ADV_MAP_CONTAINER_INDEX: true,
+  ADV_MAP_CONTAINER_INDEX: true,
   LevelNavigator
 */
 
@@ -108,9 +108,10 @@ TileLayer = ccui.Widget.extend({
   setNode: function (map_data, tile_number, parent) {
     'use strict';
 
-    var node, data, friend_navigator, i,
+    var node, data, friend_navigator,
       nav_data = this.navigator_data,
-      node_settings = this.node_settings;
+      node_settings = this.node_settings,
+      map = this.scrollable_map;
 
     parent.removeAllChildren();
     data = this.checkInArray(map_data.nodes, tile_number);
@@ -119,7 +120,7 @@ TileLayer = ccui.Widget.extend({
       node = new NodeLayer(this);
       data.max_ms = map_data.max_ms_no;
       data.ms = this.ms_number;
-      data.scrollable_map = this.scrollable_map;
+      data.scrollable_map = map;
       data.node_settings = node_settings;
       node.build(data);
       node.setTouchEnabled(true);
@@ -127,13 +128,16 @@ TileLayer = ccui.Widget.extend({
       parent.addChild(node);
 
       if (nav_data.length > 0) {
-        this.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
-        for (i = 0; i < nav_data.length; i++) {
-          friend_navigator = new LevelNavigator(true);
-          friend_navigator.build(node, node_settings);
-          friend_navigator.refresh(nav_data[i].uid);
-          node.addNavigator(friend_navigator);
-        }
+        _.each(nav_data, function (data) {
+          if (data.is_friend) {
+            friend_navigator = new LevelNavigator(true);
+            friend_navigator.build(node, node_settings);
+            friend_navigator.refresh(data.uid);
+            node.addNavigator(friend_navigator);
+          } else {
+            map.getParent().player_navigator.reposition(node);
+          }
+        });
       }
     }
   },

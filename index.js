@@ -126,7 +126,8 @@ AdventureMapLayer = cc.Layer.extend({
       if (ms <= this.tile_config[1].range.max) {
         node = this.findNodeByMSNumber(ms);
         nav_data = {
-          uid: uid
+          uid: uid,
+          is_friend: true
         };
         if (node && logged_in) {
           friend_navigator = new LevelNavigator(true);
@@ -158,6 +159,10 @@ AdventureMapLayer = cc.Layer.extend({
       this.player_navigator = new LevelNavigator();
       this.player_navigator.build(parent, node_settings);
       this.player_navigator.refresh(player_uid);
+      parent.tile_layer.saveNavigatorData({
+        uid: player_uid,
+        is_friend: false
+      });
       parent.addNavigator(this.player_navigator);
     }
   },

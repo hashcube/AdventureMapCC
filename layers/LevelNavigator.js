@@ -2,11 +2,15 @@
 */
 LevelNavigator = ccui.Widget.extend({
   node_settings: null,
+  uid: null,
+  is_friend: null,
+  tile_layer: null,
   ctor: function (is_friend) {
     'use strict';
 
     this._super();
     this.retain();
+    this.uid = '';
     this.is_friend = !!is_friend;
     return true;
   },
@@ -18,6 +22,10 @@ LevelNavigator = ccui.Widget.extend({
 
     this.node_settings = node_settings;
     this.setContentSize(size);
+    if (!this.is_friend) {
+      this.setTouchEnabled(true);
+      this.addOnTouchListener();
+    }
   },
 
   addNavigatorWithImage: function (texture, size) {
@@ -52,6 +60,21 @@ LevelNavigator = ccui.Widget.extend({
   reposition: function (node) {
     'use strict';
 
+    var old_nav_data = this.tile_layer.navigator_data,
+      cond_func = _.bind(function (data) {
+        if (data) {
+          return data.uid === this.uid;
+        }
+      }, this),
+      new_nav_data, index;
+
+    index = _.findIndex(old_nav_data, cond_func);
+    new_nav_data = _.reject(old_nav_data, cond_func);
+    this.tile_layer.navigator_data = new_nav_data;
+
+    if (index !== -1) {
+      node.tile_layer.saveNavigatorData(old_nav_data[index]);
+    }
     this.removeFromParent();
     node.addNavigator(this);
   },
@@ -62,6 +85,7 @@ LevelNavigator = ccui.Widget.extend({
     var size = this.getContentSize(),
       frame_url, image_size, frame_pos;
 
+    this.uid = uid;
     if (this.is_friend) {
       frame_url = this.node_settings.friend_frame;
       image_size = cc.size(40, 40);
@@ -84,6 +108,24 @@ LevelNavigator = ccui.Widget.extend({
     } else {
       this.addNavigatorWithImage(this.node_settings.no_profile, size);
     }
+  },
+
+  addOnTouchListener: function () {
+    'use strict';
+
+    this.addTouchEventListener(_.bind(function (evt, type) {
+      if (type === ccui.Widget.TOUCH_ENDED) {
+        cc.eventManager.dispatchCustomEvent('ms_selected', {
+          ms: this.getParent().milestone
+        });
+      }
+    }, this), this);
+  },
+
+  setTileLayer: function (layer) {
+    'use strict';
+
+    this.tile_layer = layer;
   },
 
   onEnter: function () {
