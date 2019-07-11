@@ -64,11 +64,10 @@ LevelNavigator = ccui.Widget.extend({
           return data.is_friend === false;
         }
       },
-      new_nav_data, index;
+      index;
 
     index = _.findIndex(old_nav_data, cond_func);
-    new_nav_data = _.reject(old_nav_data, cond_func);
-    this.tile_layer.navigator_data = new_nav_data;
+    this.tile_layer.navigator_data = _.reject(old_nav_data, cond_func);
 
     if (index !== -1) {
       node.tile_layer.saveNavigatorData(old_nav_data[index]);
