@@ -2,7 +2,6 @@
 */
 LevelNavigator = ccui.Widget.extend({
   node_settings: null,
-  uid: null,
   is_friend: null,
   tile_layer: null,
   ctor: function (is_friend) {
@@ -10,7 +9,6 @@ LevelNavigator = ccui.Widget.extend({
 
     this._super();
     this.retain();
-    this.uid = '';
     this.is_friend = !!is_friend;
     return true;
   },
@@ -85,7 +83,6 @@ LevelNavigator = ccui.Widget.extend({
     var size = this.getContentSize(),
       frame_url, image_size, frame_pos;
 
-    this.uid = uid;
     if (this.is_friend) {
       frame_url = this.node_settings.friend_frame;
       image_size = cc.size(40, 40);
