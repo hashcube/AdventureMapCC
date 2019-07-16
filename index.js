@@ -281,7 +281,7 @@ AdventureMapLayer = cc.Layer.extend({
 
     var star_data = opts.star_data,
       max_ms = this.max_ms = opts.max_ms,
-      curr_ms = opts.curr_ms_no,
+      curr_ms = opts.curr_ms,
       fb_data = opts.fb_data,
       sync = opts.sync;
 
