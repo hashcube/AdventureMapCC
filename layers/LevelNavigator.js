@@ -8,7 +8,6 @@ LevelNavigator = ccui.Widget.extend({
     'use strict';
 
     this._super();
-    this.retain();
     this.is_friend = !!is_friend;
     return true;
   },
@@ -23,6 +22,7 @@ LevelNavigator = ccui.Widget.extend({
     if (!this.is_friend) {
       this.setTouchEnabled(true);
       this.addOnTouchListener();
+      this.retain();
     }
   },
 
@@ -67,10 +67,10 @@ LevelNavigator = ccui.Widget.extend({
       index;
 
     index = _.findIndex(old_nav_data, cond_func);
-    this.tile_layer.navigator_data = _.reject(old_nav_data, cond_func);
 
     if (index !== -1) {
-      node.tile_layer.saveNavigatorData(old_nav_data[index]);
+      node.tile_layer.saveNavigatorData(old_nav_data.splice(index, 1)[0]);
+      this.tile_layer.navigator_data = old_nav_data;
     }
     this.removeFromParent();
     node.addNavigator(this);

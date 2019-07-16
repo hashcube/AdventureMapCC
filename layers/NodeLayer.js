@@ -64,15 +64,13 @@ NodeLayer = ccui.Widget.extend({
   onMilestoneSelected: function (target, type) {
     'use strict';
 
-    var ms_number,
-      map = this.scrollable_map;
+    var ms_number;
 
     if (type === ccui.Widget.TOUCH_ENDED) {
       ms_number = target.milestone;
       cc.eventManager.dispatchCustomEvent('ms_selected', {
         ms: ms_number
       });
-      map.map_position = map.getInnerContainerPosition();
     }
   },
 
@@ -118,7 +116,9 @@ NodeLayer = ccui.Widget.extend({
       new_nav_pos.x = prev_nav_pos.x +
         prev_nav.getContentSize().width * 0.25;
     }
-    player_navigator.setTag(ADV_MAP_NAVIGATOR_TAG);
+    if (player_navigator.is_friend) {
+      player_navigator.setTag(ADV_MAP_NAVIGATOR_TAG);
+    }
     player_navigator.setPosition(new_nav_pos);
     player_navigator.setTileLayer(this.tile_layer);
     this.navigator_array.push(player_navigator);

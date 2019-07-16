@@ -146,7 +146,9 @@ AdventureMapLayer = cc.Layer.extend({
           node.tile_layer.saveNavigatorData(nav_data);
           node.addNavigator(friend_navigator);
         } else if (node && !logged_in) {
-          node.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
+          while (node.getChildByTag(ADV_MAP_NAVIGATOR_TAG)) {
+            node.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
+          }
         } else {
           tile_layer = this.findTileLayerByMSNumber(ms);
           if (tile_layer && logged_in) {
@@ -205,7 +207,18 @@ AdventureMapLayer = cc.Layer.extend({
   resetPlayerNavigator: function (uid) {
     'use strict';
 
+    var focus_child, node;
+
     this.player_navigator.refresh(uid);
+    focus_child = this.scrollable_map.getFocusChild();
+    node = focus_child.getNode();
+    if (node) {
+      node.tile_layer.saveNavigatorData({
+        uid: uid,
+        is_friend: false
+      });
+      this.player_navigator.reposition(node);
+    }
   },
 
   findNodeByMSNumber: function (ms) {
@@ -247,10 +260,11 @@ AdventureMapLayer = cc.Layer.extend({
 
     var map = this.scrollable_map,
       i = 0,
-      tileLayer, focus_child, node;
+      tileLayer;
 
     for (i = 0; i < map.map_children.length; i++) {
       tileLayer = map.map_children[i];
+      tileLayer.resetNavigatorData();
       tileLayer.node_settings.star_data = star_data;
       if (tileLayer.ms_number === curr_ms) {
         map.setFocusChild(tileLayer);
@@ -260,31 +274,27 @@ AdventureMapLayer = cc.Layer.extend({
       }
     }
     map.jumpToVisibleArea();
-    focus_child = map.getFocusChild();
-    node = focus_child.getNode();
-    if (node) {
-      this.player_navigator.reposition(node);
-    }
   },
 
   refreshMap: function (opts) {
     'use strict';
 
-    var nodes_in_map,
-      star_data = opts.star_data,
-      max_ms = this.max_ms = opts.max_ms_no,
+    var star_data = opts.star_data,
+      max_ms = this.max_ms = opts.max_ms,
       curr_ms = opts.curr_ms_no,
-      fb_data = opts.fb_data;
+      fb_data = opts.fb_data,
+      sync = opts.sync;
 
-    this.cycleThroughMap(curr_ms, star_data);
-    nodes_in_map = this.getAllVisibleNodesInMap();
-    _.each(nodes_in_map, _.bind(function (node) {
-      node.refreshNode(max_ms, star_data);
-    }, this));
-    if (fb_data) {
-      this.fb_data = fb_data;
-      this.resetPlayerNavigator(fb_data.uid);
+    if (sync) {
+      this.cycleThroughMap(curr_ms, star_data);
       this.buildFriendsPlayerNavigator(fb_data.friends_data, fb_data.status);
     }
+
+    _.each(this.getAllVisibleNodesInMap(), _.bind(function (node) {
+      node.refreshNode(max_ms, star_data);
+    }, this));
+
+    this.fb_data = fb_data;
+    this.resetPlayerNavigator(fb_data.uid);
   }
 });

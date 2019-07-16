@@ -10,7 +10,7 @@ MAP_CONSTANTS = {
 
 VerticalScrollMap = ccui.ScrollView.extend({
   map_children: [],
-  map_position: null,
+  map_built: null,
   ctor: function () {
     'use strict';
 
@@ -122,14 +122,11 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     this._super();
 
-    if (this.map_position) {
-      this.setInnerContainerPosition(this.map_position);
-    } else {
+    if (!this.map_built) {
       this.jumpToVisibleArea();
       this.addEventListener(_.bind(this.onScroll, this));
-      setTimeout(_.bind(function () {
-        this.getParent().onMapBuilt();
-      }, this), 1);
+      this.getParent().onMapBuilt();
+      this.map_built = true;
     }
   },
 

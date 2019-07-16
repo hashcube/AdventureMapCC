@@ -65,20 +65,25 @@ TileLayer = ccui.Widget.extend({
     tile_layer = cc.pool.getFromPool(TileLayer);
     container = tile_layer.getChildByTag(ADV_MAP_CONTAINER_TAG);
 
-    prev_tiles_added = this.row_idx * map_data.rowLength;
-    tile_map = this.tile_map;
-    row_idx = this.row_idx;
-    for (i = 0; i < container.getChildrenCount(); i++) {
-      tile = container.getChildren()[i];
-      tile_added = prev_tiles_added + i;
-      url = tile_map + '_' + row_idx + '_' + i + '.png';
-      tile.loadTexture(url, ccui.Widget.PLIST_TEXTURE);
-      this.setNode(map_data, tile_added, tile);
-    }
+    if (container) {
+      prev_tiles_added = this.row_idx * map_data.rowLength;
+      tile_map = this.tile_map;
+      row_idx = this.row_idx;
+      for (i = 0; i < container.getChildrenCount(); i++) {
+        tile = container.getChildren()[i];
+        tile_added = prev_tiles_added + i;
+        url = tile_map + '_' + row_idx + '_' + i + '.png';
+        tile.loadTexture(url, ccui.Widget.PLIST_TEXTURE);
+        this.setNode(map_data, tile_added, tile);
+      }
 
-    container.retain();
-    container.removeFromParent();
-    this.addChild(container, ADV_MAP_CONTAINER_INDEX);
+      container.retain();
+      container.removeFromParent();
+      this.addChild(container, ADV_MAP_CONTAINER_INDEX);
+    } else {
+      this.map_data = map_data;
+      this.createTileLayer();
+    }
   },
 
   createTileLayer: function () {
@@ -176,7 +181,10 @@ TileLayer = ccui.Widget.extend({
   getTiles: function () {
     'use strict';
 
-    return this.getChildByTag(ADV_MAP_CONTAINER_TAG).getChildren();
+    var container = this.getChildByTag(ADV_MAP_CONTAINER_TAG),
+      tiles = container ? container.getChildren() : [];
+
+    return tiles;
   },
 
   getNode: function () {
