@@ -145,8 +145,9 @@ VerticalScrollMap = ccui.ScrollView.extend({
   jumpToVisibleArea: function () {
     'use strict';
 
-    var percent, i, buffer, tileLayer,
+    var pos, i, buffer, tileLayer,
       focus_index = this.getChildIndex(this.getFocusChild()),
+      focus_size = this.getFocusChild().getContentSize(),
       bottom_visible_idx = focus_index + 20,
       top_visible_idx = focus_index - 20,
       last_child_idx = this.map_children.length - 1;
@@ -161,8 +162,6 @@ VerticalScrollMap = ccui.ScrollView.extend({
       top_visible_idx -= buffer;
     }
 
-    percent = focus_index / last_child_idx * 100;
-    this.jumpToPercentVertical(percent);
     for (i = top_visible_idx; i <= bottom_visible_idx; i++) {
       if (cc.pool.hasObject(TileLayer)) {
         this.getParent().createMapWithTile(i);
@@ -172,6 +171,14 @@ VerticalScrollMap = ccui.ScrollView.extend({
         tileLayer.setVisible(true);
       }
     }
+
+    pos = (focus_index - last_child_idx + 5) * focus_size.height;
+    if (Math.abs(pos) < 0) {
+      pos = 0;
+    } else if (Math.abs(pos) > this.getInnerContainerSize().height) {
+      pos = this.getInnerContainerSize().height * -1;
+    }
+    this.setInnerContainerPosition(cc.p(0, pos));
     this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
   },
 
