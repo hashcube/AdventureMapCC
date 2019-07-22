@@ -124,7 +124,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
     this._super();
 
     if (!this.map_built) {
-      this.jumpToVisibleArea();
+      this.createVisibleArea();
       this.addEventListener(_.bind(this.onScroll, this));
       this.getParent().onMapBuilt();
       this.map_built = true;
@@ -142,15 +142,13 @@ VerticalScrollMap = ccui.ScrollView.extend({
     }
   },
 
-  jumpToVisibleArea: function () {
+  createVisibleArea: function () {
     'use strict';
 
-    var pos, i, buffer, tileLayer,
+    var i, buffer, tileLayer,
       focus_index = this.getChildIndex(this.getFocusChild()),
-      focus_size = this.getFocusChild().getContentSize(),
       bottom_visible_idx = focus_index + 20,
       top_visible_idx = focus_index - 20,
-      focus_offset = 4,
       last_child_idx = this.map_children.length - 1;
 
     if (top_visible_idx < 0) {
@@ -173,14 +171,27 @@ VerticalScrollMap = ccui.ScrollView.extend({
       }
     }
 
+    this.jumpToVisibleArea();
+    this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
+  },
+
+  jumpToVisibleArea: function () {
+    'use strict';
+
+    var focus_index = this.getChildIndex(this.getFocusChild()),
+      last_child_idx = this.map_children.length - 1,
+      focus_offset = 4,
+      focus_size = this.getFocusChild().getContentSize(),
+      max_pos = this.getInnerContainerSize().height * -1,
+      pos;
+
     pos = (focus_index - last_child_idx + focus_offset) * focus_size.height;
-    if (Math.abs(pos) < 0) {
+    if (pos > 0) {
       pos = 0;
-    } else if (Math.abs(pos) > this.getInnerContainerSize().height) {
-      pos = this.getInnerContainerSize().height * -1;
+    } else if (pos < max_pos) {
+      pos = max_pos;
     }
     this.setInnerContainerPosition(cc.p(0, pos));
-    this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
   },
 
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {

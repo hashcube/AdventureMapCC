@@ -219,6 +219,7 @@ AdventureMapLayer = cc.Layer.extend({
       });
       this.player_navigator.reposition(node);
     }
+    this.scrollable_map.jumpToVisibleArea();
   },
 
   findNodeByMSNumber: function (ms) {
@@ -273,7 +274,7 @@ AdventureMapLayer = cc.Layer.extend({
         cc.pool.putInPool(tileLayer);
       }
     }
-    map.jumpToVisibleArea();
+    map.createVisibleArea();
   },
 
   refreshMap: function (opts) {
@@ -292,6 +293,9 @@ AdventureMapLayer = cc.Layer.extend({
 
     _.each(this.getAllVisibleNodesInMap(), _.bind(function (node) {
       node.refreshNode(max_ms, star_data);
+      if (node.milestone === curr_ms) {
+        this.scrollable_map.setFocusChild(node.tile_layer);
+      }
     }, this));
 
     this.fb_data = fb_data;
