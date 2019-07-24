@@ -97,7 +97,7 @@ AdventureMapLayer = cc.Layer.extend({
           hor_layout.prev_map_max_range = range ? range.min - 1 : 0;
           hor_layout.setVisible(false);
           hor_layout.build(map_data, map, node_settings);
-          map.map_layout.addChild(hor_layout);
+          map.addChild(hor_layout);
         }
       }
     }
