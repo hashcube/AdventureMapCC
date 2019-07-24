@@ -8,26 +8,28 @@ MAP_CONSTANTS = {
   DIST_CHECK_CONST: 10
 };
 
-VerticalScrollMap = ccui.ScrollView.extend({
+VerticalScrollMap = cc.ScrollView.extend({
   map_children: [],
   map_built: null,
-  map_position: null,
+  map_layout: null,
+  map_offset: null,
   ctor: function () {
     'use strict';
 
-    this._super();
-    this.setLayoutType(ccui.Layout.LINEAR_VERTICAL);
-    this.setContentSize(cc.winSize);
-    this.setDirection(ccui.ScrollView.DIR_VERTICAL);
-    this.setTouchEnabled(true);
-    this.setScrollBarEnabled(false);
+    this.map_layout = new ccui.Layout();
+    this.map_layout.setLayoutType(ccui.Layout.LINEAR_VERTICAL);
+
+    this._super(cc.winSize, this.map_layout);
+    this.setBounceable(false);
+    this.setDirection(cc.SCROLLVIEW_DIRECTION_VERTICAL);
+    this.setDelegate(this);
   },
 
   setAdventureMapSize: function () {
     'use strict';
 
     var i, length, totalHeight, totalWidth,
-      locItems = this.map_children = this.getChildren();
+      locItems = this.map_children = this.map_layout.getChildren();
 
     length = locItems.length;
     totalHeight = 0;
@@ -35,7 +37,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
       totalHeight += locItems[i].getContentSize().height;
     }
     totalWidth = locItems[0].getContentSize().width;
-    this.setInnerContainerSize(cc.size(totalWidth, totalHeight));
+    this.map_layout.setContentSize(cc.size(totalWidth, totalHeight));
   },
 
   checkTopBoundary: function () {
@@ -66,20 +68,18 @@ VerticalScrollMap = ccui.ScrollView.extend({
     }
   },
 
-  onScroll: function (event, type) {
+  scrollViewDidScroll: function () {
     'use strict';
 
-    var start_pos, end_pos;
+    var start_pos = this.map_offset.y,
+      end_pos = this.getContentOffset().y;
 
-    if (type === ccui.ScrollView.EVENT_CONTAINER_MOVED) {
-      start_pos = event.getTouchBeganPosition().y;
-      end_pos = event.getTouchEndPosition().y;
-      if (start_pos - end_pos > 0) {
-        this.checkTopBoundary();
-      } else {
-        this.checkBottomBoundary();
-      }
+    if (start_pos - end_pos > 0) {
+      this.checkTopBoundary();
+    } else {
+      this.checkBottomBoundary();
     }
+    this.map_offset.y = end_pos;
   },
 
   setTopChildIndex: function (idx) {
@@ -125,20 +125,8 @@ VerticalScrollMap = ccui.ScrollView.extend({
 
     if (!this.map_built) {
       this.createVisibleArea();
-      this.addEventListener(_.bind(this.onScroll, this));
       this.getParent().onMapBuilt();
       this.map_built = true;
-    } else if (!cc.sys.isNative && this.map_position) {
-      this.setInnerContainerPosition(this.map_position);
-    }
-  },
-
-  onExit: function () {
-    'use strict';
-
-    this._super();
-    if (!cc.sys.isNative) {
-      this.map_position = this.getInnerContainerPosition();
     }
   },
 
@@ -182,7 +170,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
       last_child_idx = this.map_children.length - 1,
       focus_offset = 4,
       focus_size = this.getFocusChild().getContentSize(),
-      max_pos = this.getInnerContainerSize().height * -1,
+      max_pos = this.getContainer().getContentSize().height * -1,
       pos;
 
     pos = (focus_index - last_child_idx + focus_offset) * focus_size.height;
@@ -191,7 +179,8 @@ VerticalScrollMap = ccui.ScrollView.extend({
     } else if (pos < max_pos) {
       pos = max_pos;
     }
-    this.setInnerContainerPosition(cc.p(0, pos));
+    this.getContainer().setPosition(cc.p(0, pos));
+    this.map_offset = this.getContentOffset();
   },
 
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {
@@ -216,7 +205,7 @@ VerticalScrollMap = ccui.ScrollView.extend({
       this.setBottomChildIndex(remove_index - 1);
     } else {
       add_index = this.getBottomChildIndex() + 1;
-      if (add_index >= this.getChildrenCount()) {
+      if (add_index >= this.map_children.length) {
         return;
       }
       this.setBottomChildIndex(add_index);
@@ -230,111 +219,27 @@ VerticalScrollMap = ccui.ScrollView.extend({
   getTopmostItemInCurrentView: function () {
     'use strict';
 
-    return this.getClosestItemToPositionInCurrentView(
-      cc.p(0.5, 1),
-      cc.p(0.5, 0.5)
-    );
+    var i;
+
+    for (i = this.getTopChildIndex(); i < this.getBottomChildIndex(); i++) {
+      if (this.isNodeVisible(this.map_children[i])) {
+        return this.map_children[i];
+      }
+    }
+    return null;
   },
 
   getBottommostItemInCurrentView: function () {
     'use strict';
 
-    return this.getClosestItemToPositionInCurrentView(
-      cc.p(0.5, 0),
-      cc.p(0.5, 0.5)
-    );
-  },
+    var i;
 
-  getClosestItemToPositionInCurrentView: function (positionRatioInView,
-      childAnchorPoint) {
-    'use strict';
-
-    var contentSize, targetPosition;
-
-    contentSize = this.getContentSize();
-    targetPosition = cc.pMult(this.getInnerContainerPosition(), -1);
-    targetPosition.x += contentSize.width * positionRatioInView.x;
-    targetPosition.y += contentSize.height * positionRatioInView.y;
-
-    return this.getClosestItemToPosition(targetPosition, childAnchorPoint);
-  },
-
-  getClosestItemToPosition: function (targetPosition, childAnchorPoint) {
-    'use strict';
-
-    var firstIndex, firstPosition, distanceFromFirst, lastIndex, lastPosition,
-      distanceFromLast,
-      children = this.map_children;
-
-    if (children.length === 0) {
-      return null;
-    }
-
-    // Find the closest item through binary search
-    firstIndex = 0;
-    firstPosition = this._calculateChildPositionWithAnchor(
-      children[firstIndex],
-      childAnchorPoint
-    );
-    distanceFromFirst = cc.pLength(cc.pSub(targetPosition, firstPosition));
-
-    lastIndex = children.length - 1;
-    lastPosition = this._calculateChildPositionWithAnchor(
-      children[lastIndex],
-      childAnchorPoint
-    );
-    distanceFromLast = cc.pLength(cc.pSub(targetPosition, lastPosition));
-
-    return this._findClosestChild(targetPosition, children, childAnchorPoint,
-      firstIndex, distanceFromFirst, lastIndex, distanceFromLast);
-  },
-
-  _calculateChildPositionWithAnchor: function (child, childAnchorPoint) {
-    'use strict';
-
-    var origin, size, x, y;
-
-    origin = cc.p(child.getLeftBoundary(), child.getBottomBoundary());
-    size = child.getContentSize();
-    x = origin.x + size.width * childAnchorPoint.x;
-    y = origin.y + size.height * childAnchorPoint.y;
-    return cc.p(x, y);
-  },
-
-  _findClosestChild: function (targetPosition, children, childAnchorPoint,
-      firstIndex, distanceFromFirst, lastIndex, distanceFromLast) {
-    'use strict';
-
-    var midIndex, childPosition, distanceFromMid;
-
-    if (firstIndex === lastIndex) {
-      return children[firstIndex];
-    }
-    if (lastIndex - firstIndex === 1) {
-      if (distanceFromFirst <= distanceFromLast) {
-        return children[firstIndex];
-      } else {
-        return children[lastIndex];
+    for (i = this.getBottomChildIndex(); i > this.getTopChildIndex(); i--) {
+      if (this.isNodeVisible(this.map_children[i])) {
+        return this.map_children[i];
       }
     }
-
-    // Binary search
-    midIndex = Math.floor((firstIndex + lastIndex) / 2);
-    childPosition = this._calculateChildPositionWithAnchor(
-      children[midIndex],
-      childAnchorPoint
-    );
-    distanceFromMid = cc.pLength(cc.pSub(targetPosition, childPosition));
-
-    if (distanceFromFirst <= distanceFromLast) {
-      // Left half
-      return this._findClosestChild(targetPosition, children, childAnchorPoint,
-        firstIndex, distanceFromFirst, midIndex, distanceFromMid);
-    } else {
-      // Right half
-      return this._findClosestChild(targetPosition, children, childAnchorPoint,
-        midIndex, distanceFromMid, lastIndex, distanceFromLast);
-    }
+    return null;
   },
 
   getChildIndex: function (child) {
