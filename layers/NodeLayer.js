@@ -39,7 +39,7 @@ NodeLayer = ccui.Widget.extend({
     this.setPosition(cc.p(opts.x, opts.y));
 
     ms_number_text = new cc.LabelTTF(opts.ms,
-        cc._mGetCustomFontName(res[char_settings.font]));
+        cc._mGetCustomFontName(res[char_settings.font], true));
     ms_text_color = cc.color(char_settings.font_color);
     ms_stroke_color = cc.color(char_settings.stroke_color);
     ms_number_text.setPosition(cc.p(node_pos.x, node_pos.y * 0.55));
