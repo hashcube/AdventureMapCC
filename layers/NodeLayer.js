@@ -107,8 +107,7 @@ NodeLayer = ccui.Widget.extend({
 
     var nav_array = this.navigator_array,
       prev_nav, prev_nav_pos,
-      new_nav_pos = cc.p(player_navigator.size.width * 0.5,
-        player_navigator.size.height * 0.5);
+      new_nav_pos = cc.p(0, player_navigator.size.height);
 
     if (nav_array.length > 0 && player_navigator.is_friend) {
       prev_nav = nav_array[nav_array.length - 1];
