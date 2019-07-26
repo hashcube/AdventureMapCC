@@ -1,8 +1,9 @@
 /* global cc, ccui, ADV_MAP_NODE_IMAGE_TAG: true,
   NodeLayer: true, res, ADV_MAP_NAVIGATOR_TAG: true,
-  ADV_MAP_NAVIGATOR_INDEX: true
+  ADV_MAP_NAVIGATOR_INDEX: true, NODE_LAYER_SCALE: true
  */
 
+NODE_LAYER_SCALE = 1;
 NodeLayer = ccui.Widget.extend({
   milestone: -1,
   navigator_array: null,
@@ -11,6 +12,7 @@ NodeLayer = ccui.Widget.extend({
     'use strict';
 
     this._super();
+    this.setScale(NODE_LAYER_SCALE);
     this.navigator_array = [];
     this.tile_layer = tile_layer;
     return true;

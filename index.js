@@ -2,7 +2,7 @@
   AdventureMapLayer: true, res, ADV_MAP_CONTAINER_TAG: true,
   ADV_MAP_NODE_TAG: true, ADV_MAP_NODE_IMAGE_TAG: true, LevelNavigator,
   ADV_MAP_NAVIGATOR_TAG: true, ADV_MAP_CONTAINER_INDEX: true,
-  ADV_MAP_NAVIGATOR_INDEX: true
+  ADV_MAP_NAVIGATOR_INDEX: true, NODE_LAYER_SCALE: true
  */
 
 ADV_MAP_CONTAINER_TAG = 0;
@@ -65,6 +65,7 @@ AdventureMapLayer = cc.Layer.extend({
       res[node_settings.node_img]
     );
 
+    NODE_LAYER_SCALE = opts.tablet_scale || 1;
     this.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
     this.addChild(map);
