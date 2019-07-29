@@ -71,15 +71,19 @@ VerticalScrollMap = cc.ScrollView.extend({
   scrollViewDidScroll: function () {
     'use strict';
 
-    var start_pos = this.map_offset.y,
+    var start_pos, end_pos;
+
+    if (this.map_built) {
+      start_pos = this.map_offset.y;
       end_pos = this.getContentOffset().y;
 
-    if (start_pos - end_pos > 0) {
-      this.checkTopBoundary();
-    } else {
-      this.checkBottomBoundary();
+      if (start_pos - end_pos > 0) {
+        this.checkTopBoundary();
+      } else {
+        this.checkBottomBoundary();
+      }
     }
-    this.map_offset.y = end_pos;
+    this.map_offset = this.getContentOffset();
   },
 
   setTopChildIndex: function (idx) {
@@ -179,8 +183,7 @@ VerticalScrollMap = cc.ScrollView.extend({
     } else if (pos < max_pos) {
       pos = max_pos;
     }
-    this.getContainer().setPosition(cc.p(0, pos));
-    this.map_offset = this.getContentOffset();
+    this.setContentOffset(cc.p(0, pos), !!this.map_built);
   },
 
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {
