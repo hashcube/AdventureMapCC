@@ -1,4 +1,4 @@
-/* global cc, ccui, facebook, LevelNavigator: true
+/* global cc, ccui, facebook, LevelNavigator: true, app
 */
 LevelNavigator = ccui.Widget.extend({
   node_settings: null,
@@ -86,7 +86,7 @@ LevelNavigator = ccui.Widget.extend({
       frame_pos = cc.p(size.width * 0.53, size.height * 0.45);
     }
     this.removeAllChildren();
-    if (cc.sys.isNative && facebook.isLoggedIn() && uid) {
+    if (cc.sys.isNative && app.user.get('connected_to_fb') && uid) {
       facebook.addFBProfilePic({
         parent: this,
         uid: uid,
