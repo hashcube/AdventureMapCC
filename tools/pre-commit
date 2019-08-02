@@ -1,0 +1,163 @@
+#!/bin/bash
+# Pre-commit hook
+
+init()
+{
+  # Temporary staging area
+  TMP_STAGING=".tmp_staging"
+  # absolute path of this repo
+  ROOT_DIR=$(git rev-parse --show-toplevel)
+  # path of your jshint config
+  CONF="--config=${ROOT_DIR}/.jshintrc"
+
+  if git rev-parse --verify HEAD >/dev/null 2>&1
+  then
+    against=HEAD
+  else
+    # If initial commit, diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+  fi
+}
+
+is_installed() {
+  # check whether command is installed or not
+  for cmd in "$@"
+  do
+    hash $cmd 2>&- || { echo >&2 "$cmd not installed. Aborting."; exit 1; }
+  done
+}
+
+is_installed_node() {
+  # check whether node module is installed or not
+  for cmd in "$@"
+  do
+    npm list $cmd 2>&- || { echo >&2 "$cmd not installed. Aborting."; exit 1; }
+  done
+}
+
+check_prerequisites()
+{
+  is_installed node jscs jshint
+  is_installed_node ansi-regex
+
+  #jscs version
+  JSCS_CURRENT=$(jscs  --version 2>&1)
+  JSCS_REQUIRED="2.5.0"
+  if [ "$JSCS_CURRENT" != $JSCS_REQUIRED ]; then
+    echo "found ${JSCS_CURRENT} need jscs ${JSCS_REQUIRED}"
+    echo "install it using - npm install -g jscs@${JSCS_REQUIRED}"
+    exit 1
+  fi
+
+  #jshint version
+  JSHINT_CURRENT=$(jshint --version 2>&1)
+  JSHINT_REQUIRED="2.8.0"
+  if [ "$JSHINT_CURRENT" != "jshint v${JSHINT_REQUIRED}" ]; then
+    echo "found ${JSHINT_CURRENT} need jshint ${JSHINT_REQUIRED}"
+    echo "install it using - npm install -g jshint@${JSHINT_REQUIRED}"
+    exit 1
+  fi
+
+  #jscs
+  JSCS=$(which jscs)
+
+  # jshint path
+  JSHINT=$(which jshint)
+
+  #node
+  NODE=$(which node)
+}
+
+create_tmp_staging()
+{
+  # retrieve all files in staging area that are added, modified or renamed
+  FILES=$(git diff-index --name-only --cached --diff-filter=ACMR $against -- | egrep \.js$)
+  echo $FILES
+  if [ "$FILES" == "" ]; then
+    exit 0
+  fi
+
+  mkdir $TMP_STAGING
+
+  STAGED_FILES=""
+  for FILE in $FILES
+  do
+    ID=$(git diff-index --cached HEAD $FILE | cut -d " " -f4)
+
+    # create staged version of file in temporary staging area with the same
+    # path as the original file so that the phpcs ignore filters can be applied
+    mkdir -p "$TMP_STAGING/$(dirname $FILE)"
+    git cat-file blob $ID > "$TMP_STAGING/$FILE"
+    STAGED_FILES="$STAGED_FILES $TMP_STAGING/$FILE"
+  done
+}
+
+finish()
+{
+  # delete temporary copy of staging area
+  rm -rf $TMP_STAGING
+}
+
+check_done()
+{
+  if [ $1 -gt 0 ]; then
+    finish
+    exit $1
+  else
+    echo "${2} check passed ${3/$TMP_STAGING/}"
+  fi
+}
+
+check_jshint()
+{
+  for file in $STAGED_FILES; do
+    $JSHINT $file ${CONF}
+    RETVAL=$?
+    check_done $RETVAL "jshint" $file
+  done
+}
+
+check_unused_imports()
+{
+  for file in $STAGED_FILES; do
+    $NODE tools/importCheck $file
+    RETVAL=$?
+    check_done $RETVAL "import" $file
+  done
+}
+
+check_coding_standards()
+{
+  for file in $STAGED_FILES; do
+    # comment all import statements
+    # jscs parsing will break otherwise
+    sed -i -e "s/^import.*$/\/\*&\*\//g" $file
+    $JSCS $file
+    RETVAL=$?
+    check_done $RETVAL "jscs" $file
+  done
+}
+
+run_test()
+{
+  # run tests
+  istanbul cover _mocha -- -R spec
+  TEST=$?
+  check_done $TEST "test"
+  # coverage result is stored in result_istanbul please check .istanbul.yml
+  coverage_input=${ROOT_DIR}/coverage/result_istanbul
+  # Storing the output in result
+  coverage_output=${ROOT_DIR}/coverage/result
+  # to remove ANSI escape sequences from the file
+  node ${ROOT_DIR}/tools/strip_ansi.js ${coverage_input} >${coverage_output}
+  git add $coverage_output
+}
+
+init
+check_prerequisites
+create_tmp_staging
+check_jshint
+check_unused_imports
+check_coding_standards
+# run_test
+finish
