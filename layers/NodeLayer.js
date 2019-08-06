@@ -82,7 +82,7 @@ NodeLayer = ccui.Widget.extend({
     var node_settings = this.node_settings,
       nodes = node_settings.nodes,
       ms = this.milestone,
-      stars = node_settings.star_data[ms],
+      stars = node_settings.star_data[ms] || 0,
       url;
 
     url = ms <= max_ms ? nodes[stars].image :
