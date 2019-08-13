@@ -1,6 +1,6 @@
-/* global ChapterLayer: true, cc, ccui, res
+/* global adv_map: true, cc, ccui, res
 */
-ChapterLayer = ccui.Widget.extend({
+adv_map.layers.ChapterLayer = ccui.Widget.extend({
   ctor: function (opts) {
     'use strict';
 

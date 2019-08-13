@@ -1,10 +1,7 @@
-/* global cc, ccui, TileLayer: true, NodeLayer,
-  ADV_MAP_CONTAINER_TAG: true, ADV_MAP_NODE_TAG: true,
-  ADV_MAP_CONTAINER_INDEX: true, ChapterLayer, ADV_MAP_CHAPTER_TAG: true,
-  LevelNavigator
+/* global cc, ccui, adv_map: true
 */
 
-TileLayer = ccui.Widget.extend({
+adv_map.layers.TileLayer = ccui.Widget.extend({
   ms_number: 0,
   map_idx: -1,
   row_idx: -1,
@@ -63,8 +60,8 @@ TileLayer = ccui.Widget.extend({
     var tile, url, i, container, tile_added, prev_tiles_added,
       tile_layer, tile_map, row_idx;
 
-    tile_layer = cc.pool.getFromPool(TileLayer);
-    container = tile_layer.getChildByTag(ADV_MAP_CONTAINER_TAG);
+    tile_layer = cc.pool.getFromPool(adv_map.layers.TileLayer);
+    container = tile_layer.getChildByTag(adv_map.constants.tags.container);
 
     if (container) {
       prev_tiles_added = this.row_idx * map_data.rowLength;
@@ -80,7 +77,7 @@ TileLayer = ccui.Widget.extend({
 
       container.retain();
       container.removeFromParent();
-      this.addChild(container, ADV_MAP_CONTAINER_INDEX);
+      this.addChild(container, adv_map.constants.z_index.container);
       this.addChapters();
     } else {
       this.map_data = map_data;
@@ -98,8 +95,8 @@ TileLayer = ccui.Widget.extend({
     container = new ccui.Layout();
     container.setLayoutType(ccui.Layout.LINEAR_HORIZONTAL);
     container.setContentSize(this.hor_size);
-    this.addChild(container, ADV_MAP_CONTAINER_INDEX);
-    container.setTag(ADV_MAP_CONTAINER_TAG);
+    this.addChild(container, adv_map.constants.z_index.container);
+    container.setTag(adv_map.constants.tags.container);
     prev_tiles_added = this.row_idx * map_data.rowLength;
     tile_map = this.tile_map;
     row_idx = this.row_idx;
@@ -122,12 +119,12 @@ TileLayer = ccui.Widget.extend({
 
     if (chapter_settings && this.tile_map.indexOf('bridge') !== -1 &&
       this.row_idx === col_length - 1) {
-      chapter = new ChapterLayer({
+      chapter = new adv_map.layers.ChapterLayer({
         settings: chapter_settings,
         size: this.hor_size,
         chapter: this.chapter
       });
-      this.addChild(chapter, ADV_MAP_CHAPTER_TAG);
+      this.addChild(chapter, adv_map.constants.z_index.chapter);
     }
   },
 
@@ -143,20 +140,20 @@ TileLayer = ccui.Widget.extend({
     data = this.checkInArray(map_data.nodes, tile_number);
     if (data) {
       this.setMilestone(data, map_data);
-      node = new NodeLayer(this);
+      node = new adv_map.layers.NodeLayer(this);
       data.max_ms = map_data.max_ms_no;
       data.ms = this.ms_number;
       data.scrollable_map = map;
       data.node_settings = node_settings;
       node.build(data);
       node.setTouchEnabled(true);
-      node.setTag(ADV_MAP_NODE_TAG);
+      node.setTag(adv_map.constants.tags.node);
       parent.addChild(node);
 
       if (nav_data.length > 0) {
         _.each(nav_data, function (data) {
           if (data.is_friend) {
-            friend_navigator = new LevelNavigator(true);
+            friend_navigator = new adv_map.layers.LevelNavigator(true);
             friend_navigator.build(node, node_settings);
             friend_navigator.refresh(data.uid);
             node.addNavigator(friend_navigator);
@@ -202,7 +199,7 @@ TileLayer = ccui.Widget.extend({
   getTiles: function () {
     'use strict';
 
-    var container = this.getChildByTag(ADV_MAP_CONTAINER_TAG),
+    var container = this.getChildByTag(adv_map.constants.tags.container),
       tiles = container ? container.getChildren() : [];
 
     return tiles;
@@ -216,7 +213,7 @@ TileLayer = ccui.Widget.extend({
 
     for (j = 0; j < tiles.length; j++) {
       tile = tiles[j];
-      node = tile.getChildByTag(ADV_MAP_NODE_TAG);
+      node = tile.getChildByTag(adv_map.constants.tags.node);
       if (node) {
         return node;
       }
@@ -227,7 +224,7 @@ TileLayer = ccui.Widget.extend({
   hasContainer: function () {
     'use strict';
 
-    return !!this.getChildByTag(ADV_MAP_CONTAINER_TAG);
+    return !!this.getChildByTag(adv_map.constants.tags.container);
   },
 
   unuse: function () {

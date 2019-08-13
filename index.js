@@ -1,21 +1,32 @@
-/* global cc, VerticalScrollMap, TileLayer,
-  AdventureMapLayer: true, res, ADV_MAP_CONTAINER_TAG: true,
-  ADV_MAP_NODE_TAG: true, ADV_MAP_NODE_IMAGE_TAG: true, LevelNavigator,
-  ADV_MAP_NAVIGATOR_TAG: true, ADV_MAP_CONTAINER_INDEX: true,
-  ADV_MAP_NAVIGATOR_INDEX: true, NODE_LAYER_SCALE: true,
-  ADV_MAP_CHAPTER_TAG: true
+/* global cc, adv_map: true, res
  */
 
-ADV_MAP_CONTAINER_TAG = 0;
-ADV_MAP_NODE_TAG = 1;
-ADV_MAP_NODE_IMAGE_TAG = 2;
-ADV_MAP_CHAPTER_TAG = 3;
-ADV_MAP_NAVIGATOR_TAG = 4;
+adv_map = {
+  constants: {
+    tags: {
+      container: 0,
+      node: 1,
+      node_image: 2,
+      navigator: 3
+    },
+    z_index: {
+      container: 1,
+      navigator: 2,
+      chapter: 3
+    },
+    scrollmap: {
+      pos_top: 0,
+      pos_bottom: 1,
+      dist_check_const: 10
+    },
+    scale: {
+      node: 1
+    }
+  },
+  layers: {}
+};
 
-ADV_MAP_CONTAINER_INDEX = 1;
-ADV_MAP_NAVIGATOR_INDEX = 2;
-
-AdventureMapLayer = cc.Layer.extend({
+adv_map.AdventureMapLayer = cc.Layer.extend({
   data_path: '',
   max_ms: 0,
   node_settings: null,
@@ -25,7 +36,7 @@ AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     this._super();
-    this.scrollable_map = new VerticalScrollMap();
+    this.scrollable_map = new adv_map.layers.VerticalScrollMap();
 
     _.bindAll(this, 'refreshMap', 'onMSSelected', 'onMapBuilt');
 
@@ -67,7 +78,7 @@ AdventureMapLayer = cc.Layer.extend({
       res[node_settings.node_img]
     );
 
-    NODE_LAYER_SCALE = opts.tablet_scale || 1;
+    adv_map.constants.scale.node = opts.tablet_scale || 1;
     this.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
     this.addChild(map);
@@ -95,7 +106,7 @@ AdventureMapLayer = cc.Layer.extend({
 
       for (i = repeat; i > 0; i--) {
         for (j = 0; j < col_length; j++) {
-          hor_layout = new TileLayer(map_data);
+          hor_layout = new adv_map.layers.TileLayer(map_data);
           hor_layout.tile_map = tile;
           hor_layout.map_idx = i - 1;
           hor_layout.row_idx = j;
@@ -146,14 +157,14 @@ AdventureMapLayer = cc.Layer.extend({
           is_friend: true
         };
         if (node && logged_in) {
-          friend_navigator = new LevelNavigator(true);
+          friend_navigator = new adv_map.layers.LevelNavigator(true);
           friend_navigator.build(node, node_settings);
           friend_navigator.refresh(uid);
           node.tile_layer.saveNavigatorData(nav_data);
           node.addNavigator(friend_navigator);
         } else if (node && !logged_in) {
-          while (node.getChildByTag(ADV_MAP_NAVIGATOR_TAG)) {
-            node.removeChildByTag(ADV_MAP_NAVIGATOR_TAG);
+          while (node.getChildByTag(adv_map.constants.tags.navigator)) {
+            node.removeChildByTag(adv_map.constants.tags.navigator);
           }
         } else {
           tile_layer = this.findTileLayerByMSNumber(ms);
@@ -174,7 +185,7 @@ AdventureMapLayer = cc.Layer.extend({
       parent = this.findNodeByMSNumber(this.max_ms);
 
     if (parent && !this.player_navigator) {
-      this.player_navigator = new LevelNavigator();
+      this.player_navigator = new adv_map.layers.LevelNavigator();
       this.player_navigator.build(parent, node_settings);
       this.player_navigator.refresh(player_uid);
       parent.tile_layer.saveNavigatorData({
