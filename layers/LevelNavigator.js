@@ -1,6 +1,6 @@
-/* global cc, ccui, facebook, LevelNavigator: true, app
+/* global cc, ccui, facebook, adv_map: true, app
 */
-LevelNavigator = ccui.Widget.extend({
+adv_map.layers.LevelNavigator = ccui.Widget.extend({
   node_settings: null,
   is_friend: null,
   tile_layer: null,

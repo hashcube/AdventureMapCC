@@ -1,14 +1,7 @@
-/* global cc, ccui, VerticalScrollMap: true,
-  MAP_CONSTANTS: true, TileLayer
+/* global cc, ccui, adv_map: true
  */
 
-MAP_CONSTANTS = {
-  POS_TOP: 0,
-  POS_BOTTOM: 1,
-  DIST_CHECK_CONST: 10
-};
-
-VerticalScrollMap = cc.ScrollView.extend({
+adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   map_children: [],
   map_built: null,
   map_layout: null,
@@ -47,10 +40,11 @@ VerticalScrollMap = cc.ScrollView.extend({
       top_view_item_height = top_view_item.getContentSize().height,
       top_visible_item = this.map_children[this.getTopChildIndex()],
       top_distance = top_visible_item.y - top_view_item.y,
-      dist_checker = MAP_CONSTANTS.DIST_CHECK_CONST * top_view_item_height;
+      dist_checker = adv_map.constants.scrollmap.dist_check_const *
+        top_view_item_height;
 
     if (top_distance < dist_checker) {
-      this.addChildToMap(MAP_CONSTANTS.POS_TOP);
+      this.addChildToMap(adv_map.constants.scrollmap.pos_top);
     }
   },
 
@@ -61,10 +55,11 @@ VerticalScrollMap = cc.ScrollView.extend({
       bottom_view_item_height = bottom_view_item.getContentSize().height,
       bottom_visible_item = this.map_children[this.getBottomChildIndex()],
       bottom_distance = bottom_view_item.y - bottom_visible_item.y,
-      dist_checker = MAP_CONSTANTS.DIST_CHECK_CONST * bottom_view_item_height;
+      dist_checker = adv_map.constants.scrollmap.dist_check_const *
+        bottom_view_item_height;
 
     if (bottom_distance < dist_checker) {
-      this.addChildToMap(MAP_CONSTANTS.POS_BOTTOM);
+      this.addChildToMap(adv_map.constants.scrollmap.pos_bottom);
     }
   },
 
@@ -154,7 +149,7 @@ VerticalScrollMap = cc.ScrollView.extend({
     }
 
     for (i = top_visible_idx; i <= bottom_visible_idx; i++) {
-      if (cc.pool.hasObject(TileLayer)) {
+      if (cc.pool.hasObject(adv_map.layers.TileLayer)) {
         this.getParent().createMapWithTile(i);
       } else {
         tileLayer = this.map_children[i];
@@ -198,7 +193,7 @@ VerticalScrollMap = cc.ScrollView.extend({
 
     var add_index, remove_index;
 
-    if (pos === MAP_CONSTANTS.POS_TOP) {
+    if (pos === adv_map.constants.scrollmap.pos_top) {
       add_index = this.getTopChildIndex() - 1;
       if (add_index < 0) {
         return;

@@ -1,10 +1,7 @@
-/* global cc, ccui, ADV_MAP_NODE_IMAGE_TAG: true,
-  NodeLayer: true, res, ADV_MAP_NAVIGATOR_TAG: true,
-  ADV_MAP_NAVIGATOR_INDEX: true, NODE_LAYER_SCALE: true
+/* global cc, ccui, adv_map: true, res
  */
 
-NODE_LAYER_SCALE = 1;
-NodeLayer = ccui.Widget.extend({
+adv_map.layers.NodeLayer = ccui.Widget.extend({
   milestone: -1,
   navigator_array: null,
   tile_layer: null,
@@ -12,7 +9,7 @@ NodeLayer = ccui.Widget.extend({
     'use strict';
 
     this._super();
-    this.setScale(NODE_LAYER_SCALE);
+    this.setScale(adv_map.constants.scale.node);
     this.navigator_array = [];
     this.tile_layer = tile_layer;
     return true;
@@ -33,7 +30,7 @@ NodeLayer = ccui.Widget.extend({
     url = this.getImageURL(max_ms);
 
     node_image = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
-    node_image.setTag(ADV_MAP_NODE_IMAGE_TAG);
+    node_image.setTag(adv_map.constants.tags.node_image);
     node_size = node_image.getContentSize();
     node_pos = cc.p(node_size.width * 0.5, node_size.height * 0.5);
 
@@ -93,7 +90,7 @@ NodeLayer = ccui.Widget.extend({
   refreshNode: function (max_ms, star_data) {
     'use strict';
 
-    var node_img = this.getChildByTag(ADV_MAP_NODE_IMAGE_TAG),
+    var node_img = this.getChildByTag(adv_map.constants.tags.node_image),
       url;
 
     this.node_settings.star_data = star_data;
@@ -121,11 +118,11 @@ NodeLayer = ccui.Widget.extend({
         prev_nav.getContentSize().width * 0.25;
     }
     if (player_navigator.is_friend) {
-      player_navigator.setTag(ADV_MAP_NAVIGATOR_TAG);
+      player_navigator.setTag(adv_map.constants.tags.navigator);
     }
     player_navigator.setPosition(new_nav_pos);
     player_navigator.setTileLayer(this.tile_layer);
     this.navigator_array.push(player_navigator);
-    this.addChild(player_navigator, ADV_MAP_NAVIGATOR_INDEX);
+    this.addChild(player_navigator, adv_map.constants.z_index.navigator);
   }
 });
