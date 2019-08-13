@@ -1,6 +1,6 @@
 /* global cc, ccui, TileLayer: true, NodeLayer,
   ADV_MAP_CONTAINER_TAG: true, ADV_MAP_NODE_TAG: true,
-  ADV_MAP_CONTAINER_INDEX: true,
+  ADV_MAP_CONTAINER_INDEX: true, ChapterLayer, ADV_MAP_CHAPTER_TAG: true,
   LevelNavigator
 */
 
@@ -10,6 +10,7 @@ TileLayer = ccui.Widget.extend({
   row_idx: -1,
   prev_map_max_range: -1,
   tile_map: '',
+  chapter: -1,
   hor_size: null,
   map_data: null,
   node_settings: null,
@@ -80,6 +81,7 @@ TileLayer = ccui.Widget.extend({
       container.retain();
       container.removeFromParent();
       this.addChild(container, ADV_MAP_CONTAINER_INDEX);
+      this.addChapters();
     } else {
       this.map_data = map_data;
       this.createTileLayer();
@@ -107,6 +109,25 @@ TileLayer = ccui.Widget.extend({
       tile = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
       this.setNode(map_data, tile_added, tile);
       container.addChild(tile);
+    }
+    this.addChapters();
+  },
+
+  addChapters: function () {
+    'use strict';
+
+    var chapter,
+      col_length = this.map_data.colLength,
+      chapter_settings = this.node_settings.chapter_settings;
+
+    if (chapter_settings && this.tile_map.indexOf('bridge') !== -1 &&
+      this.row_idx === col_length - 1) {
+      chapter = new ChapterLayer({
+        settings: chapter_settings,
+        size: this.hor_size,
+        chapter: this.chapter
+      });
+      this.addChild(chapter, ADV_MAP_CHAPTER_TAG);
     }
   },
 

@@ -2,13 +2,15 @@
   AdventureMapLayer: true, res, ADV_MAP_CONTAINER_TAG: true,
   ADV_MAP_NODE_TAG: true, ADV_MAP_NODE_IMAGE_TAG: true, LevelNavigator,
   ADV_MAP_NAVIGATOR_TAG: true, ADV_MAP_CONTAINER_INDEX: true,
-  ADV_MAP_NAVIGATOR_INDEX: true, NODE_LAYER_SCALE: true
+  ADV_MAP_NAVIGATOR_INDEX: true, NODE_LAYER_SCALE: true,
+  ADV_MAP_CHAPTER_TAG: true
  */
 
 ADV_MAP_CONTAINER_TAG = 0;
 ADV_MAP_NODE_TAG = 1;
 ADV_MAP_NODE_IMAGE_TAG = 2;
-ADV_MAP_NAVIGATOR_TAG = 3;
+ADV_MAP_CHAPTER_TAG = 3;
+ADV_MAP_NAVIGATOR_TAG = 4;
 
 ADV_MAP_CONTAINER_INDEX = 1;
 ADV_MAP_NAVIGATOR_INDEX = 2;
@@ -74,13 +76,15 @@ AdventureMapLayer = cc.Layer.extend({
   initializeMap: function (tile_config, max_ms_no, node_settings) {
     'use strict';
 
-    var i, j, k, tile_data, tile, repeat, map_data,
+    var i, j, k, tile_data, tile, repeat, map_data, chapter,
       hor_layout, map, col_length, range;
 
     map = this.scrollable_map;
+    chapter = tile_config.length / 2;
     for (k = 0; k < tile_config.length; k++) {
       tile_data = tile_config[k];
       tile = tile_data.tile_id;
+      chapter += tile.indexOf('bridge') !== -1 ? -1 : 0;
       repeat = tile_data.repeat;
       range = tile_data.range;
 
@@ -95,6 +99,7 @@ AdventureMapLayer = cc.Layer.extend({
           hor_layout.tile_map = tile;
           hor_layout.map_idx = i - 1;
           hor_layout.row_idx = j;
+          hor_layout.chapter = chapter;
           hor_layout.prev_map_max_range = range ? range.min - 1 : 0;
           hor_layout.setVisible(false);
           hor_layout.build(map_data, map, node_settings);
