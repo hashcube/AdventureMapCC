@@ -128,12 +128,13 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
       this.buildFriendsPlayerNavigator(this.fb_data.friends_data,
         this.fb_data.status);
     }
+    cc.eventManager.dispatchCustomEvent('map_built');
   },
 
   findTileLayerByMSNumber: function (ms) {
     'use strict';
 
-    var layers = this.scrollable_map.children,
+    var layers = this.scrollable_map.map_children,
       i;
 
     for (i = layers.length - 1; i >= 0; i--) {
@@ -141,6 +142,22 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
         return layers[i];
       }
     }
+  },
+
+  getAllTileLayersWithNodes: function () {
+    'use strict';
+
+    var layers = this.scrollable_map.map_children,
+      tile_layers = [],
+      i;
+
+    for (i = layers.length - 1; i >= 0; i--) {
+      if (layers[i].ms_number !== 0) {
+        tile_layers.push(layers[i]);
+      }
+    }
+
+    return tile_layers;
   },
 
   buildFriendsPlayerNavigator: function (friends_data, logged_in) {

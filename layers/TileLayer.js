@@ -12,6 +12,8 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
   map_data: null,
   node_settings: null,
   navigator_data: null,
+  extra_data: {},
+  scrollable_map: null,
   ctor: function (map_data) {
     'use strict';
 
@@ -20,6 +22,10 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
 
     this._super();
     this.navigator_data = [];
+    this.extra_data = {
+      gifting: false,
+      bonus_level: false
+    };
     this.hor_size = cc.size(hor_layout_width, hor_layout_height);
     this.map_data = map_data;
     return true;
@@ -82,6 +88,12 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     } else {
       this.map_data = map_data;
       this.createTileLayer();
+    }
+    if (this.extra_data.bonus_level) {
+      this.addBonusLevelToNode();
+    }
+    if (this.extra_data.gifting) {
+      this.addGiftToNode();
     }
   },
 
@@ -162,6 +174,49 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
           }
         });
       }
+    }
+  },
+
+  addBonusLevelToNode: function () {
+    'use strict';
+
+    var bonus_level,
+      settings = this.node_settings.bonus_level_settings,
+      node = this.getNode();
+
+    if (settings && node) {
+      bonus_level = new adv_map.layers.BonusLevel({
+        settings: settings,
+        pos: cc.p(-60, 0),
+        tag: 'BonusLevel',
+        size: node.getContentSize()
+      });
+      node.addChild(bonus_level);
+      this.extra_data.bonus_level = true;
+    } else if (settings && !node) {
+      this.extra_data.bonus_level = true;
+    }
+  },
+
+  addGiftToNode: function () {
+    'use strict';
+
+    var gifting,
+      settings = this.node_settings.gifting_settings,
+      node = this.getNode(),
+      gift_pos = this.extra_data.bonus_level ? cc.p(125, 0) : cc.p(-25, 0);
+
+    if (settings && node) {
+      gifting = new adv_map.layers.GiftingLevel({
+        settings: settings,
+        pos: gift_pos,
+        tag: 'GiftingLevel',
+        size: node.getContentSize()
+      });
+      node.addChild(gifting);
+      this.extra_data.gifting = true;
+    } else if (settings && !node) {
+      this.extra_data.gifting = true;
     }
   },
 
