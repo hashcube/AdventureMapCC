@@ -67,9 +67,9 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
       max_ms_no = this.max_ms = opts.max_ms;
 
     this.data_path = opts.data_path;
-    node_settings = this.node_settings = cc.loader.getRes(
-      this.data_path + 'settings/node_settings.json'
-    );
+    node_settings = this.node_settings = _.extend(cc.loader.getRes(
+      this.data_path + 'settings/node_settings.json'),
+      opts.node_settings || {});
     this.fb_data = opts.fb_data;
     node_settings.star_data = opts.star_data;
     tile_config = this.tile_config = cc.loader.getRes(this.data_path +

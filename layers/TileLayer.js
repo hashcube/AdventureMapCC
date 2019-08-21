@@ -23,8 +23,8 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     this._super();
     this.navigator_data = [];
     this.extra_data = {
-      gifting: false,
-      bonus_level: false
+      BonusLevel: false,
+      GiftingLevel: false
     };
     this.hor_size = cc.size(hor_layout_width, hor_layout_height);
     this.map_data = map_data;
@@ -89,12 +89,12 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       this.map_data = map_data;
       this.createTileLayer();
     }
-    if (this.extra_data.bonus_level) {
-      this.addBonusLevelToNode();
-    }
-    if (this.extra_data.gifting) {
-      this.addGiftToNode();
-    }
+
+    _.each(this.extra_data, _.bind(function (enabled, tag) {
+      if (enabled) {
+        this.addTagById(tag);
+      }
+    }, this));
   },
 
   createTileLayer: function () {
@@ -177,46 +177,31 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     }
   },
 
-  addBonusLevelToNode: function () {
+  addTagById: function (id) {
     'use strict';
 
-    var bonus_level,
-      settings = this.node_settings.bonus_level_settings,
-      node = this.getNode();
-
-    if (settings && node) {
-      bonus_level = new adv_map.layers.BonusLevel({
-        settings: settings,
-        pos: cc.p(-60, 0),
-        tag: 'BonusLevel',
-        size: node.getContentSize()
-      });
-      node.addChild(bonus_level);
-      this.extra_data.bonus_level = true;
-    } else if (settings && !node) {
-      this.extra_data.bonus_level = true;
-    }
-  },
-
-  addGiftToNode: function () {
-    'use strict';
-
-    var gifting,
-      settings = this.node_settings.gifting_settings,
+    var extra,
       node = this.getNode(),
-      gift_pos = this.extra_data.bonus_level ? cc.p(125, 0) : cc.p(-25, 0);
+      extra_pos = cc.p(-25, 0);
 
-    if (settings && node) {
-      gifting = new adv_map.layers.GiftingLevel({
-        settings: settings,
-        pos: gift_pos,
-        tag: 'GiftingLevel',
+    if (node) {
+      extra = new this.node_settings.extras[id]({
+        pos: extra_pos,
         size: node.getContentSize()
       });
-      node.addChild(gifting);
-      this.extra_data.gifting = true;
-    } else if (settings && !node) {
-      this.extra_data.gifting = true;
+      node.addChild(extra);
+      extra.setTouchEnabled(true);
+      extra.addTouchEventListener(function (target, type) {
+        if (type === ccui.Widget.TOUCH_ENDED) {
+          cc.eventManager.dispatchCustomEvent('map_extra', {
+            tag: extra.node_tag,
+            ms: extra.getParent().milestone
+          });
+        }
+      }, extra);
+      this.extra_data[id] = true;
+    } else {
+      this.extra_data[id] = true;
     }
   },
 
