@@ -67,16 +67,15 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
       max_ms_no = this.max_ms = opts.max_ms;
 
     this.data_path = opts.data_path;
-    node_settings = this.node_settings = cc.loader.getRes(
-      this.data_path + 'settings/node_settings.json'
-    );
+    node_settings = this.node_settings = _.extend(cc.loader.getRes(
+      this.data_path + 'settings/node_settings.json'),
+      opts.node_settings || {});
     this.fb_data = opts.fb_data;
     node_settings.star_data = opts.star_data;
     tile_config = this.tile_config = cc.loader.getRes(this.data_path +
       'tile_config.json');
     cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
-      res[node_settings.node_img]
-    );
+      res[node_settings.node_img]);
 
     adv_map.constants.scale.node = opts.tablet_scale || 1;
     this.initializeMap(tile_config, max_ms_no, node_settings);
@@ -128,19 +127,27 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
       this.buildFriendsPlayerNavigator(this.fb_data.friends_data,
         this.fb_data.status);
     }
+    cc.eventManager.dispatchCustomEvent('map_built');
   },
 
   findTileLayerByMSNumber: function (ms) {
     'use strict';
 
-    var layers = this.scrollable_map.children,
-      i;
+    var layers = this.scrollable_map.map_children;
 
-    for (i = layers.length - 1; i >= 0; i--) {
-      if (layers[i].ms_number === ms) {
-        return layers[i];
-      }
-    }
+    return _.filter(layers, function (layer) {
+      return layer.ms_number === ms;
+    });
+  },
+
+  getAllTileLayersWithNodes: function () {
+    'use strict';
+
+    var layers = this.scrollable_map.map_children;
+
+    return _.filter(layers, function (layer) {
+      return layer.ms_number > 0;
+    });
   },
 
   buildFriendsPlayerNavigator: function (friends_data, logged_in) {

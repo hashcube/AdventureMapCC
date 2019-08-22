@@ -12,6 +12,8 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
   map_data: null,
   node_settings: null,
   navigator_data: null,
+  extra_data: null,
+  scrollable_map: null,
   ctor: function (map_data) {
     'use strict';
 
@@ -20,6 +22,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
 
     this._super();
     this.navigator_data = [];
+    this.extra_data = {};
     this.hor_size = cc.size(hor_layout_width, hor_layout_height);
     this.map_data = map_data;
     return true;
@@ -83,6 +86,12 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       this.map_data = map_data;
       this.createTileLayer();
     }
+
+    _.each(this.extra_data, _.bind(function (enabled, tag) {
+      if (enabled) {
+        this.addTagById(tag);
+      }
+    }, this));
   },
 
   createTileLayer: function () {
@@ -163,6 +172,31 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
         });
       }
     }
+  },
+
+  addTagById: function (id) {
+    'use strict';
+
+    var extra,
+      node = this.getNode();
+
+    if (node) {
+      extra = new this.node_settings.extras[id]({
+        ms: this.ms_number,
+        size: node.getContentSize()
+      });
+      node.addChild(extra);
+      extra.setTouchEnabled(true);
+      extra.addTouchEventListener(function (target, type) {
+        if (type === ccui.Widget.TOUCH_ENDED) {
+          cc.eventManager.dispatchCustomEvent('tag_selected', {
+            tag: extra.node_tag,
+            ms: extra.getParent().milestone
+          });
+        }
+      }, extra);
+    }
+    this.extra_data[id] = true;
   },
 
   setMilestone: function (data, map_data) {
