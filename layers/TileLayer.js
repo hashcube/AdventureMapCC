@@ -192,7 +192,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       extra.setTouchEnabled(true);
       extra.addTouchEventListener(function (target, type) {
         if (type === ccui.Widget.TOUCH_ENDED) {
-          cc.eventManager.dispatchCustomEvent('map_extra', {
+          cc.eventManager.dispatchCustomEvent('tag_selected', {
             tag: extra.node_tag,
             ms: extra.getParent().milestone
           });

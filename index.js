@@ -133,30 +133,21 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   findTileLayerByMSNumber: function (ms) {
     'use strict';
 
-    var layers = this.scrollable_map.map_children,
-      i;
+    var layers = this.scrollable_map.map_children;
 
-    for (i = layers.length - 1; i >= 0; i--) {
-      if (layers[i].ms_number === ms) {
-        return layers[i];
-      }
-    }
+    return _.filter(layers, function (layer) {
+      return layer.ms_number === ms;
+    });
   },
 
   getAllTileLayersWithNodes: function () {
     'use strict';
 
-    var layers = this.scrollable_map.map_children,
-      tile_layers = [],
-      i;
+    var layers = this.scrollable_map.map_children;
 
-    for (i = layers.length - 1; i >= 0; i--) {
-      if (layers[i].ms_number > 0) {
-        tile_layers.push(layers[i]);
-      }
-    }
-
-    return tile_layers;
+    return _.filter(layers, function (layer) {
+      return layer.ms_number > 0;
+    });
   },
 
   buildFriendsPlayerNavigator: function (friends_data, logged_in) {
