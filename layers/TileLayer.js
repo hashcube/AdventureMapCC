@@ -195,10 +195,8 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
           });
         }
       }, extra);
-      this.extra_data[id] = true;
-    } else {
-      this.extra_data[id] = true;
     }
+    this.extra_data[id] = true;
   },
 
   setMilestone: function (data, map_data) {
