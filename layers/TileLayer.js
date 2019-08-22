@@ -12,7 +12,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
   map_data: null,
   node_settings: null,
   navigator_data: null,
-  extra_data: {},
+  extra_data: null,
   scrollable_map: null,
   ctor: function (map_data) {
     'use strict';
@@ -22,10 +22,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
 
     this._super();
     this.navigator_data = [];
-    this.extra_data = {
-      BonusLevel: false,
-      GiftingLevel: false
-    };
+    this.extra_data = {};
     this.hor_size = cc.size(hor_layout_width, hor_layout_height);
     this.map_data = map_data;
     return true;
