@@ -181,12 +181,11 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     'use strict';
 
     var extra,
-      node = this.getNode(),
-      extra_pos = cc.p(-25, 0);
+      node = this.getNode();
 
     if (node) {
       extra = new this.node_settings.extras[id]({
-        pos: extra_pos,
+        ms: this.ms_number,
         size: node.getContentSize()
       });
       node.addChild(extra);

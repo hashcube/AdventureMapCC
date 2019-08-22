@@ -75,8 +75,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     tile_config = this.tile_config = cc.loader.getRes(this.data_path +
       'tile_config.json');
     cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
-      res[node_settings.node_img]
-    );
+      res[node_settings.node_img]);
 
     adv_map.constants.scale.node = opts.tablet_scale || 1;
     this.initializeMap(tile_config, max_ms_no, node_settings);
@@ -152,7 +151,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
       i;
 
     for (i = layers.length - 1; i >= 0; i--) {
-      if (layers[i].ms_number !== 0) {
+      if (layers[i].ms_number > 0) {
         tile_layers.push(layers[i]);
       }
     }
