@@ -105,22 +105,17 @@ adv_map.layers.NodeLayer = ccui.Widget.extend({
     'use strict';
 
     var nav_array = this.navigator_array,
-      prev_nav, prev_nav_pos, new_nav_pos;
-
-    new_nav_pos = player_navigator.is_friend ?
-      cc.p(player_navigator.size.width * 0.5, player_navigator.size.height) :
-      cc.p(0, player_navigator.size.height);
+      prev_nav, prev_nav_pos;
 
     if (nav_array.length > 0 && player_navigator.is_friend) {
       prev_nav = nav_array[nav_array.length - 1];
       prev_nav_pos = prev_nav.getPosition();
-      new_nav_pos.x = prev_nav_pos.x +
-        prev_nav.getContentSize().width * 0.25;
+      // new_nav_pos.x = prev_nav_pos.x +
+      //   prev_nav.getContentSize().width * 0.25;
     }
     if (player_navigator.is_friend) {
       player_navigator.setTag(adv_map.constants.tags.navigator);
     }
-    player_navigator.setPosition(new_nav_pos);
     player_navigator.setTileLayer(this.tile_layer);
     this.navigator_array.push(player_navigator);
     this.addChild(player_navigator, adv_map.constants.z_index.navigator);

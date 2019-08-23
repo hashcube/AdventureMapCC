@@ -164,9 +164,11 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
           is_friend: true
         };
         if (node && logged_in) {
-          friend_navigator = new adv_map.layers.LevelNavigator(true);
-          friend_navigator.build(node, node_settings);
-          friend_navigator.refresh(uid);
+          friend_navigator = new node_settings.extras['Player']({
+            is_friend: true,
+            parent: node,
+            uid: uid
+          });
           node.tile_layer.saveNavigatorData(nav_data);
           node.addNavigator(friend_navigator);
         } else if (node && !logged_in) {
@@ -192,9 +194,11 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
       parent = this.findNodeByMSNumber(this.max_ms);
 
     if (parent && !this.player_navigator) {
-      this.player_navigator = new adv_map.layers.LevelNavigator();
-      this.player_navigator.build(parent, node_settings);
-      this.player_navigator.refresh(player_uid);
+      this.player_navigator = new node_settings.extras['Player']({
+        is_friend: false,
+        parent: parent,
+        uid: player_uid
+      });
       parent.tile_layer.saveNavigatorData({
         uid: player_uid,
         is_friend: false

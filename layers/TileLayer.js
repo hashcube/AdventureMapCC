@@ -162,9 +162,11 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       if (nav_data.length > 0) {
         _.each(nav_data, function (data) {
           if (data.is_friend) {
-            friend_navigator = new adv_map.layers.LevelNavigator(true);
-            friend_navigator.build(node, node_settings);
-            friend_navigator.refresh(data.uid);
+            friend_navigator = new node_settings.extras['Player']({
+              is_friend: true,
+              parent: node,
+              uid: data.uid
+            });
             node.addNavigator(friend_navigator);
           } else {
             map.getParent().player_navigator.reposition(node);
