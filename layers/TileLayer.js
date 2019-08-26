@@ -11,9 +11,8 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
   hor_size: null,
   map_data: null,
   node_settings: null,
-  navigator_data: null,
-  extra_data: null,
   scrollable_map: null,
+  node_position: null,
   ctor: function (map_data) {
     'use strict';
 
@@ -21,7 +20,6 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       hor_layout_height = map_data.tileHeight;
 
     this._super();
-    this.navigator_data = [];
     this.extra_data = {};
     this.hor_size = cc.size(hor_layout_width, hor_layout_height);
     this.map_data = map_data;
@@ -86,12 +84,6 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       this.map_data = map_data;
       this.createTileLayer();
     }
-
-    _.each(this.extra_data, _.bind(function (enabled, tag) {
-      if (enabled) {
-        this.addTagById(tag);
-      }
-    }, this));
   },
 
   createTileLayer: function () {
@@ -140,8 +132,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
   setNode: function (map_data, tile_number, parent) {
     'use strict';
 
-    var node, data, friend_navigator,
-      nav_data = this.navigator_data,
+    var node, data,
       node_settings = this.node_settings,
       map = this.scrollable_map;
 
@@ -157,48 +148,33 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       node.build(data);
       node.setTouchEnabled(true);
       node.setTag(adv_map.constants.tags.node);
-      parent.addChild(node);
-
-      if (nav_data.length > 0) {
-        _.each(nav_data, function (data) {
-          if (data.is_friend) {
-            friend_navigator = new node_settings.extras['Player']({
-              is_friend: true,
-              parent: node,
-              uid: data.uid
-            });
-            node.addNavigator(friend_navigator);
-          } else {
-            map.getParent().player_navigator.reposition(node);
-          }
-        });
-      }
+      this.addChild(node);
     }
   },
 
   addTagById: function (id) {
     'use strict';
 
-    var extra,
-      node = this.getNode();
+    var extra;
 
-    if (node) {
+    if (this.node_position) {
       extra = new this.node_settings.extras[id]({
         ms: this.ms_number,
-        size: node.getContentSize()
+        node_pos: this.node_position,
+        size: cc.size(105, 109)
       });
-      node.addChild(extra);
+      extra.setTag(adv_map.constants.tags[id]);
+      this.addChild(extra);
       extra.setTouchEnabled(true);
       extra.addTouchEventListener(function (target, type) {
         if (type === ccui.Widget.TOUCH_ENDED) {
           cc.eventManager.dispatchCustomEvent('tag_selected', {
             tag: extra.node_tag,
-            ms: extra.getParent().milestone
+            ms: extra.getParent().ms_number
           });
         }
       }, extra);
     }
-    this.extra_data[id] = true;
   },
 
   setMilestone: function (data, map_data) {
@@ -210,18 +186,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     ms = data.node + map_data.nodes.length * this.map_idx;
     ms_number = this.prev_map_max_range + ms;
     this.ms_number = ms_number;
-  },
-
-  saveNavigatorData: function (data) {
-    'use strict';
-
-    this.navigator_data.push(data);
-  },
-
-  resetNavigatorData: function () {
-    'use strict';
-
-    this.navigator_data = [];
+    this.node_position = cc.p(data.x, data.y);
   },
 
   checkInArray: function (array, condition) {
@@ -232,29 +197,10 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     });
   },
 
-  getTiles: function () {
-    'use strict';
-
-    var container = this.getChildByTag(adv_map.constants.tags.container),
-      tiles = container ? container.getChildren() : [];
-
-    return tiles;
-  },
-
   getNode: function () {
     'use strict';
 
-    var tiles = this.getTiles(),
-      tile, j, node;
-
-    for (j = 0; j < tiles.length; j++) {
-      tile = tiles[j];
-      node = tile.getChildByTag(adv_map.constants.tags.node);
-      if (node) {
-        return node;
-      }
-    }
-    return null;
+    return this.getChildByTag(adv_map.constants.tags.node);
   },
 
   hasContainer: function () {

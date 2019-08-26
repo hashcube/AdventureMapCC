@@ -124,7 +124,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
 
     if (!this.map_built) {
       this.createVisibleArea();
-      this.getParent().onMapBuilt();
+      cc.eventManager.dispatchCustomEvent('map_built');
       this.map_built = true;
     }
   },

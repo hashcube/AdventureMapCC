@@ -7,7 +7,9 @@ adv_map = {
       container: 0,
       node: 1,
       node_image: 2,
-      navigator: 3
+      Player: 3,
+      GiftingLevel: 4,
+      BonusLevel: 5
     },
     z_index: {
       container: 1,
@@ -38,25 +40,9 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     this._super();
     this.scrollable_map = new adv_map.layers.VerticalScrollMap();
 
-    _.bindAll(this, 'refreshMap', 'onMSSelected', 'onMapBuilt');
+    _.bindAll(this, 'refreshMap');
 
     return true;
-  },
-
-  onEnter: function () {
-    'use strict';
-
-    this._super();
-
-    // Event listener for milestone clicked
-    cc.eventManager.addCustomListener('ms_selected', this.onMSSelected);
-  },
-
-  onExit: function () {
-    'use strict';
-
-    this._super();
-    cc.eventManager.removeCustomListeners('ms_selected');
   },
 
   build: function (opts) {
@@ -119,23 +105,12 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     }
   },
 
-  onMapBuilt: function () {
-    'use strict';
-
-    this.buildPlayerLevelNavigator(this.node_settings);
-    if (this.fb_data) {
-      this.buildFriendsPlayerNavigator(this.fb_data.friends_data,
-        this.fb_data.status);
-    }
-    cc.eventManager.dispatchCustomEvent('map_built');
-  },
-
   findTileLayerByMSNumber: function (ms) {
     'use strict';
 
     var layers = this.scrollable_map.map_children;
 
-    return _.filter(layers, function (layer) {
+    return _.find(layers, function (layer) {
       return layer.ms_number === ms;
     });
   },
@@ -150,73 +125,16 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     });
   },
 
-  buildFriendsPlayerNavigator: function (friends_data, logged_in) {
+  removeTag: function (tag) {
     'use strict';
 
-    var node, friend_navigator, tile_layer, nav_data,
-      node_settings = this.node_settings;
+    var layers = this.getAllTileLayersWithNodes();
 
-    _.each(friends_data, _.bind(function (ms, uid) {
-      if (ms <= this.tile_config[1].range.max) {
-        node = this.findNodeByMSNumber(ms);
-        nav_data = {
-          uid: uid,
-          is_friend: true
-        };
-        if (node && logged_in) {
-          friend_navigator = new node_settings.extras['Player']({
-            is_friend: true,
-            parent: node,
-            uid: uid
-          });
-          node.tile_layer.saveNavigatorData(nav_data);
-          node.addNavigator(friend_navigator);
-        } else if (node && !logged_in) {
-          while (node.getChildByTag(adv_map.constants.tags.navigator)) {
-            node.removeChildByTag(adv_map.constants.tags.navigator);
-          }
-        } else {
-          tile_layer = this.findTileLayerByMSNumber(ms);
-          if (tile_layer && logged_in) {
-            tile_layer.saveNavigatorData(nav_data);
-          } else if (tile_layer && !logged_in) {
-            tile_layer.resetNavigatorData();
-          }
-        }
+    _.each(layers, function (layer) {
+      if (layer.getChildByTag(adv_map.constants.tags[tag])) {
+        layer.removeChildByTag(adv_map.constants.tags[tag]);
       }
-    }, this));
-  },
-
-  buildPlayerLevelNavigator: function (node_settings) {
-    'use strict';
-
-    var player_uid = this.fb_data ? this.fb_data.uid : '',
-      parent = this.findNodeByMSNumber(this.max_ms);
-
-    if (parent && !this.player_navigator) {
-      this.player_navigator = new node_settings.extras['Player']({
-        is_friend: false,
-        parent: parent,
-        uid: player_uid
-      });
-      parent.tile_layer.saveNavigatorData({
-        uid: player_uid,
-        is_friend: false
-      });
-      parent.addNavigator(this.player_navigator);
-    }
-  },
-
-  onMSSelected: function (evt) {
-    'use strict';
-
-    var params = evt.getUserData(),
-      ms = params.ms,
-      node = this.findNodeByMSNumber(ms);
-
-    if (node) {
-      this.player_navigator.reposition(node);
-    }
+    });
   },
 
   createMapWithTile: function (index) {
@@ -230,24 +148,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     map_data = hor_layout.map_data;
     map_data.max_ms_no = this.max_ms;
     hor_layout.reCreateTileLayer(map_data);
-  },
-
-  resetPlayerNavigator: function (uid) {
-    'use strict';
-
-    var focus_child, node;
-
-    this.player_navigator.refresh(uid);
-    focus_child = this.scrollable_map.getFocusChild();
-    node = focus_child.getNode();
-    if (node) {
-      node.tile_layer.saveNavigatorData({
-        uid: uid,
-        is_friend: false
-      });
-      this.player_navigator.reposition(node);
-    }
-    this.scrollable_map.jumpToVisibleArea();
   },
 
   findNodeByMSNumber: function (ms) {
@@ -316,7 +216,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
     if (sync) {
       this.cycleThroughMap(curr_ms, star_data);
-      this.buildFriendsPlayerNavigator(fb_data.friends_data, fb_data.status);
     }
 
     _.each(this.getAllVisibleNodesInMap(), _.bind(function (node) {
@@ -327,6 +226,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     }, this));
 
     this.fb_data = fb_data;
-    this.resetPlayerNavigator(fb_data.uid);
+    this.scrollable_map.jumpToVisibleArea();
   }
 });
