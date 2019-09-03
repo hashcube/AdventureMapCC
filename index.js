@@ -39,6 +39,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
     this._super();
     this.scrollable_map = new adv_map.layers.VerticalScrollMap();
+    this.addChild(this.scrollable_map);
 
     _.bindAll(this, 'refreshMap');
 
@@ -66,7 +67,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     adv_map.constants.scale.node = opts.tablet_scale || 1;
     this.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
-    this.addChild(map);
   },
 
   initializeMap: function (tile_config, max_ms_no, node_settings) {
