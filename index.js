@@ -5,11 +5,7 @@ adv_map = {
   constants: {
     tags: {
       container: 0,
-      node: 1,
-      node_image: 2,
-      Player: 3,
-      GiftingLevel: 4,
-      BonusLevel: 5
+      node_image: 1
     },
     z_index: {
       container: 1,
@@ -57,12 +53,9 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     node_settings = this.node_settings = _.extend(cc.loader.getRes(
       this.data_path + 'settings/node_settings.json'),
       opts.node_settings || {});
-    this.fb_data = opts.fb_data;
     node_settings.star_data = opts.star_data;
     tile_config = this.tile_config = cc.loader.getRes(this.data_path +
       'tile_config.json');
-    cc.spriteFrameCache.addSpriteFrames(res[node_settings.node_plist],
-      res[node_settings.node_img]);
 
     adv_map.constants.scale.node = opts.tablet_scale || 1;
     this.initializeMap(tile_config, max_ms_no, node_settings);
@@ -128,11 +121,13 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   removeTag: function (tag) {
     'use strict';
 
-    var layers = this.getAllTileLayersWithNodes();
+    var layers = this.getAllTileLayersWithNodes(),
+      child;
 
     _.each(layers, function (layer) {
-      if (layer.getChildByTag(adv_map.constants.tags[tag])) {
-        layer.removeChildByTag(adv_map.constants.tags[tag]);
+      child = layer.getChildByName(tag);
+      if (child) {
+        layer.removeChild(child);
       }
     });
   },
@@ -175,7 +170,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
     for (i = child_min; i <= child_max; i++) {
       tile_layer = children[i];
-      node = tile_layer.getNode();
+      node = tile_layer.getChildByName('NodeLayer');
       if (node) {
         nodes.push(node);
       }
@@ -211,8 +206,8 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     var star_data = opts.star_data,
       max_ms = this.max_ms = opts.max_ms,
       curr_ms = opts.curr_ms,
-      fb_data = opts.fb_data,
-      sync = opts.sync;
+      sync = opts.sync,
+      tile_layer;
 
     if (sync) {
       this.cycleThroughMap(curr_ms, star_data);
@@ -221,11 +216,11 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     _.each(this.getAllVisibleNodesInMap(), _.bind(function (node) {
       node.refreshNode(max_ms, star_data);
       if (node.milestone === curr_ms) {
-        this.scrollable_map.setFocusChild(node.tile_layer);
+        tile_layer = this.findTileLayerByMSNumber(curr_ms);
+        this.scrollable_map.setFocusChild(tile_layer);
       }
     }, this));
 
-    this.fb_data = fb_data;
     this.scrollable_map.jumpToVisibleArea();
   }
 });

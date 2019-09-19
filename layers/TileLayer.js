@@ -73,7 +73,6 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
         tile_added = prev_tiles_added + i;
         url = tile_map + '_' + row_idx + '_' + i + '.png';
         tile.loadTexture(url, ccui.Widget.PLIST_TEXTURE);
-        this.setNode(map_data, tile_added, tile);
       }
 
       container.retain();
@@ -105,7 +104,6 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       url = tile_map + '_' + row_idx + '_' + j + '.png';
       tile_added = prev_tiles_added + j;
       tile = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
-      this.setNode(map_data, tile_added, tile);
       container.addChild(tile);
     }
     this.addChapters();
@@ -129,29 +127,6 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     }
   },
 
-  setNode: function (map_data, tile_number, parent) {
-    'use strict';
-
-    var node, data,
-      node_settings = this.node_settings,
-      map = this.scrollable_map;
-
-    parent.removeAllChildren();
-    data = this.checkInArray(map_data.nodes, tile_number);
-    if (data) {
-      this.setMilestone(data, map_data);
-      node = new adv_map.layers.NodeLayer(this);
-      data.max_ms = map_data.max_ms_no;
-      data.ms = this.ms_number;
-      data.scrollable_map = map;
-      data.node_settings = node_settings;
-      node.build(data);
-      node.setTouchEnabled(true);
-      node.setTag(adv_map.constants.tags.node);
-      this.addChild(node);
-    }
-  },
-
   addTagById: function (id) {
     'use strict';
 
@@ -163,7 +138,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
         node_pos: this.node_position,
         size: cc.size(105, 109)
       });
-      extra.setTag(adv_map.constants.tags[id]);
+      extra.setName(id);
       this.addChild(extra);
       extra.setTouchEnabled(true);
       extra.addTouchEventListener(function (target, type) {
@@ -195,12 +170,6 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     return _.find(array, function (obj) {
       return obj.map === condition;
     });
-  },
-
-  getNode: function () {
-    'use strict';
-
-    return this.getChildByTag(adv_map.constants.tags.node);
   },
 
   hasContainer: function () {
