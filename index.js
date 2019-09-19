@@ -16,9 +16,6 @@ adv_map = {
       pos_top: 0,
       pos_bottom: 1,
       dist_check_const: 10
-    },
-    scale: {
-      node: 1
     }
   },
   layers: {}
@@ -57,7 +54,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     tile_config = this.tile_config = cc.loader.getRes(this.data_path +
       'tile_config.json');
 
-    adv_map.constants.scale.node = opts.tablet_scale || 1;
     this.initializeMap(tile_config, max_ms_no, node_settings);
     map.setAdventureMapSize();
   },
