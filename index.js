@@ -34,8 +34,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     this.scrollable_map = new adv_map.layers.VerticalScrollMap();
     this.addChild(this.scrollable_map);
 
-    _.bindAll(this, 'refreshMap');
-
     return true;
   },
 
@@ -54,6 +52,9 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
     this.initializeMap(tile_config, opts.ms, node_settings);
     map.setAdventureMapSize();
+    this.focusNodeByMs(opts.ms);
+    cc.eventManager.dispatchCustomEvent('map_built');
+    map.map_built = true;
   },
 
   initializeMap: function (tile_config, ms, node_settings) {
@@ -207,7 +208,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
     for (i = 0; i < map.map_children.length; i++) {
       tileLayer = map.map_children[i];
-      tileLayer.resetNavigatorData();
       if (tileLayer.ms_number === ms) {
         map.setFocusChild(tileLayer);
       }
@@ -218,25 +218,13 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     map.createVisibleArea();
   },
 
-  refreshMap: function (opts) {
+  focusNodeByMs: function (ms) {
     'use strict';
 
-    var ms = opts.ms,
-      sync = opts.sync,
-      tile_layer;
+    var layer = this.findTileLayerByMSNumber(ms);
 
-    if (sync) {
-      this.cycleThroughMap(ms);
-    }
-
-    _.each(this.getAllVisibleNodesInMap(), _.bind(function (node) {
-      node.refreshNode();
-      if (node.milestone === ms) {
-        tile_layer = this.findTileLayerByMSNumber(ms);
-        this.scrollable_map.setFocusChild(tile_layer);
-      }
-    }, this));
-
+    this.scrollable_map.setFocusChild(layer);
+    this.cycleThroughMap(ms);
     this.scrollable_map.jumpToVisibleArea();
   }
 });

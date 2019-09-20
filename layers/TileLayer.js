@@ -130,7 +130,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
   addTagById: function (id) {
     'use strict';
 
-    var extra, old_extra;
+    var extra;
 
     if (this.node_position) {
       extra = new this.node_settings.extras[id]({
@@ -139,12 +139,6 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
         size: cc.size(105, 109)
       });
       extra.setName(id);
-      if (extra.unique) {
-        old_extra = this.getChildByName(id);
-        if (old_extra) {
-          this.removeChild(old_extra);
-        }
-      }
       this.addChild(extra);
       extra.setTouchEnabled(true);
       extra.addTouchEventListener(function (target, type) {
@@ -155,6 +149,17 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
           });
         }
       }, extra);
+    }
+  },
+
+  refresh: function (id) {
+    'use strict';
+
+    var tag = this.getChildByName(id);
+    if (tag) {
+      tag.refresh();
+    } else {
+      this.addTagById(id);
     }
   },
 
