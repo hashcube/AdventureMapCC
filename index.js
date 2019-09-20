@@ -131,10 +131,24 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   removeTag: function (tag) {
     'use strict';
 
-    var child = this.getTagById('Player');
+    var child = this.getTagById(tag);
 
     if (child) {
       child.removeFromParent();
+    }
+  },
+
+  removeTagByMs: function (tag, ms) {
+    'use strict';
+
+    var layer = this.findTileLayerByMSNumber(ms),
+      child;
+
+    if (layer) {
+      child = layer.getChildByName(tag);
+      if (child) {
+        child.removeFromParent();
+      }
     }
   },
 
