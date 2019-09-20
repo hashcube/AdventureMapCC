@@ -128,10 +128,10 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     return null;
   },
 
-  removeTag: function (tag) {
+  removeTag: function (id) {
     'use strict';
 
-    var child = this.getTagById(tag);
+    var child = this.getTagById(id);
 
     if (child) {
       child.removeFromParent();
