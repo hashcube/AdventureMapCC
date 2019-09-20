@@ -48,7 +48,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       data = this.checkInArray(map_data.nodes, tile_added);
       if (data) {
         this.setMilestone(data, map_data);
-        if (this.ms_number === map_data.max_ms_no) {
+        if (this.ms_number === map_data.ms) {
           this.scrollable_map.setFocusChild(this);
         }
       }
@@ -130,7 +130,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
   addTagById: function (id) {
     'use strict';
 
-    var extra;
+    var extra, old_extra;
 
     if (this.node_position) {
       extra = new this.node_settings.extras[id]({
@@ -139,6 +139,12 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
         size: cc.size(105, 109)
       });
       extra.setName(id);
+      if (extra.unique) {
+        old_extra = this.getChildByName(id);
+        if (old_extra) {
+          this.removeChild(old_extra);
+        }
+      }
       this.addChild(extra);
       extra.setTouchEnabled(true);
       extra.addTouchEventListener(function (target, type) {
