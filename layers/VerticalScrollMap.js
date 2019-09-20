@@ -117,18 +117,6 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
     return this.focus_child_idx;
   },
 
-  onEnter: function () {
-    'use strict';
-
-    this._super();
-
-    if (!this.map_built) {
-      this.createVisibleArea();
-      cc.eventManager.dispatchCustomEvent('map_built');
-      this.map_built = true;
-    }
-  },
-
   createVisibleArea: function () {
     'use strict';
 
@@ -158,7 +146,6 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
       }
     }
 
-    this.jumpToVisibleArea();
     this.setTopAndBottomChildIndex(top_visible_idx, bottom_visible_idx);
   },
 

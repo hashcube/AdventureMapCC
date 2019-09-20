@@ -48,7 +48,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       data = this.checkInArray(map_data.nodes, tile_added);
       if (data) {
         this.setMilestone(data, map_data);
-        if (this.ms_number === map_data.max_ms_no) {
+        if (this.ms_number === map_data.ms) {
           this.scrollable_map.setFocusChild(this);
         }
       }
@@ -149,6 +149,17 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
           });
         }
       }, extra);
+    }
+  },
+
+  refresh: function (id) {
+    'use strict';
+
+    var tag = this.getChildByName(id);
+    if (tag) {
+      tag.refresh();
+    } else {
+      this.addTagById(id);
     }
   },
 
