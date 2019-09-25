@@ -87,7 +87,7 @@ adv_map.layers.LevelNavigator = ccui.Widget.extend({
     }
     this.removeAllChildren();
     if (app.user.isFbLoggedIn() && uid) {
-      facebook.addFBProfilePic({
+      game.modules.facebook.addFBProfilePic({
         parent: this,
         uid: uid,
         size: image_size,
