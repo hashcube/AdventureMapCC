@@ -9,7 +9,7 @@ adv_map = {
     },
     z_index: {
       container: 1,
-      navigator: 2,
+      extras: 2,
       chapter: 3
     },
     scrollmap: {

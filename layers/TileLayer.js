@@ -139,16 +139,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
         size: cc.size(105, 109)
       });
       extra.setName(id);
-      this.addChild(extra);
-      extra.setTouchEnabled(true);
-      extra.addTouchEventListener(function (target, type) {
-        if (type === ccui.Widget.TOUCH_ENDED) {
-          cc.eventManager.dispatchCustomEvent('tag_selected', {
-            tag: extra.node_tag,
-            ms: extra.getParent().ms_number
-          });
-        }
-      }, extra);
+      this.addChild(extra, adv_map.constants.z_index.extras);
     }
   },
 
