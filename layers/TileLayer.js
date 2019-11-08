@@ -130,9 +130,12 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
   addTagById: function (id) {
     'use strict';
 
-    var extra;
+    var tag = this.getChildByName(id),
+      extra;
 
-    if (this.node_position) {
+    if (tag && tag.updateTag) {
+      tag.updateTag();
+    } else if (this.node_position) {
       extra = new this.node_settings.extras[id]({
         ms: this.ms_number,
         node_pos: this.node_position,
@@ -140,17 +143,6 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       });
       extra.setName(id);
       this.addChild(extra, adv_map.constants.z_index.extras);
-    }
-  },
-
-  refresh: function (id) {
-    'use strict';
-
-    var tag = this.getChildByName(id);
-    if (tag) {
-      tag.refresh();
-    } else {
-      this.addTagById(id);
     }
   },
 
