@@ -68,7 +68,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
 
     var start_pos, end_pos;
 
-    if (this.map_built) {
+    if (this.map_built && this.map_offset) {
       start_pos = this.map_offset.y;
       end_pos = this.getContentOffset().y;
 
