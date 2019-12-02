@@ -52,7 +52,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
     this.initializeMap(tile_config, opts.ms, node_settings);
     map.setAdventureMapSize();
-    cc.eventManager.dispatchCustomEvent('map_built');
     map.map_built = true;
   },
 
