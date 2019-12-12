@@ -1,4 +1,4 @@
-/* global cc, ccui, facebook, adv_map: true, app
+/* global cc, ccui, facebook, adv_map: true, app, game, console
 */
 adv_map.layers.LevelNavigator = ccui.Widget.extend({
   node_settings: null,
@@ -9,6 +9,7 @@ adv_map.layers.LevelNavigator = ccui.Widget.extend({
 
     this._super();
     this.is_friend = !!is_friend;
+    this.released = false;
     return true;
   },
 
@@ -74,7 +75,7 @@ adv_map.layers.LevelNavigator = ccui.Widget.extend({
     'use strict';
 
     var size = this.getContentSize(),
-      frame_url, image_size, frame_pos;
+      frame_url, image_size, frame_pos, cb;
 
     if (this.is_friend) {
       frame_url = this.node_settings.friend_frame;
@@ -87,13 +88,24 @@ adv_map.layers.LevelNavigator = ccui.Widget.extend({
     }
     this.removeAllChildren();
     if (app.user.isFbLoggedIn() && uid) {
+      cb = _.bind(function (img) {
+        var frame, player_image = new cc.Sprite(img);
+
+        player_image.setPosition(cc.p(size.width * 0.5, size.height * 0.5));
+        if (!this.released) {
+          this.addChild(player_image);
+          if (frame_url) {
+            frame = new ccui.ImageView(frame_url, ccui.Widget.PLIST_TEXTURE);
+            frame.setPosition(frame_pos);
+            this.addChild(frame);
+          }
+        }
+      }, this);
+
       game.modules.facebook.addFBProfilePic({
-        parent: this,
         uid: uid,
         size: image_size,
-        frame_url: frame_url,
-        image_pos: cc.p(size.width * 0.5, size.height * 0.5),
-        frame_pos: frame_pos
+        cb: cb
       });
     } else {
       this.addNavigatorWithImage(this.node_settings.no_profile, size);
@@ -128,5 +140,11 @@ adv_map.layers.LevelNavigator = ccui.Widget.extend({
       this.retain();
       this.addAnimation();
     }
+  },
+  onExit: function () {
+    'use strict';
+
+    this._super();
+    this.released = true;
   }
 });
