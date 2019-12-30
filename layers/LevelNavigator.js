@@ -134,6 +134,7 @@ adv_map.layers.LevelNavigator = ccui.Widget.extend({
     'use strict';
 
     this._super();
+    this.released = false;
     if (!this.is_friend) {
       this.setTouchEnabled(true);
       this.addOnTouchListener();
