@@ -1,3 +1,4 @@
+
 /* global cc, ccui, adv_map: true
  */
 
@@ -7,6 +8,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   map_layout: null,
   map_offset: null,
   ctor: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: ctor ");
     'use strict';
 
     this.map_layout = new ccui.Layout();
@@ -19,6 +21,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   setAdventureMapSize: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: setAdventureMapSize ");
     'use strict';
 
     var i, length, totalHeight, totalWidth,
@@ -34,6 +37,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   checkTopBoundary: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: checkTopBoundary ");
     'use strict';
 
     var top_view_item = this.getTopmostItemInCurrentView(),
@@ -49,6 +53,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   checkBottomBoundary: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: checkBottomBoundary ");
     'use strict';
 
     var bottom_view_item = this.getBottommostItemInCurrentView(),
@@ -64,60 +69,96 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   scrollViewDidScroll: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: scrollViewDidScroll ");
     'use strict';
+    app.user.emit('end_pos', 0);
+    app.user.emit('start_pos', 0);
+    cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: scrollViewDidScroll set zero");
 
     var start_pos, end_pos;
 
     if (this.map_built) {
       start_pos = this.map_offset.y;
       end_pos = this.getContentOffset().y;
+      
+      // cc.log("{call-stack} :: VYSHNAV start: ", start_pos);
+      // cc.log("{call-stack} :: VYSHNAV end_pos: ", end_pos);
+      // cc.log("{call-stack} :: VYSHNAV end_pos: ", start_pos - end_pos);
+      
+      cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV before emit srtart_pos");
 
+      app.user.emit('start_pos', start_pos);
+      cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV before emit endpos");
+
+      app.user.emit('end_pos', end_pos);
+      cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV after emit endpos");
+
+      // game.views.TopHudLayer.tempMasterScore(start_pos);
+      // game.views.TopHudLayer.tempGold(end_pos);
+      cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV before subtract if start");
       if (start_pos - end_pos > 0) {
+        cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV subtract if before");
+
         this.checkTopBoundary();
+        cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV subtract if after");
       } else {
+        cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV subtract else before");
+
         this.checkBottomBoundary();
+        cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV subtract else after");
       }
+      cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: VYSHNAV after subtract final");
+
     }
+    cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: scrollViewDidScroll before getContentOffset ");
     this.map_offset = this.getContentOffset();
+    cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: scrollViewDidScroll end getContentOffset");
   },
 
   setTopChildIndex: function (idx) {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: setTopChildIndex ");
     'use strict';
 
     this.top_child_idx = idx;
   },
 
   getTopChildIndex: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: getTopChildIndex ");
     'use strict';
 
     return this.top_child_idx;
   },
 
   setBottomChildIndex: function (idx) {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: setBottomChildIndex ");
     'use strict';
 
     this.bottom_child_idx = idx;
   },
 
   getBottomChildIndex: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: getBottomChildIndex ");
     'use strict';
 
     return this.bottom_child_idx;
   },
 
   setFocusChild: function (child) {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: setFocusChild ");
     'use strict';
 
     this.focus_child_idx = child;
   },
 
   getFocusChild: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: getFocusChild ");
     'use strict';
 
     return this.focus_child_idx;
   },
 
   onEnter: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: onEnter ");
     'use strict';
 
     this._super();
@@ -130,6 +171,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   createVisibleArea: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: createVisibleArea ");
     'use strict';
 
     var i, buffer, tileLayer,
@@ -163,6 +205,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   jumpToVisibleArea: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: jumpToVisibleArea ");
     'use strict';
 
     var focus_index = this.getChildIndex(this.getFocusChild()),
@@ -182,6 +225,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   setTopAndBottomChildIndex: function (top_visible_idx, bottom_visible_idx) {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: setTopAndBottomChildIndex ");
     'use strict';
 
     this.setTopChildIndex(top_visible_idx);
@@ -189,6 +233,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   addChildToMap: function (pos) {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: addChildToMap ");
     'use strict';
 
     var add_index, remove_index;
@@ -215,6 +260,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   getTopmostItemInCurrentView: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: getTopmostItemInCurrentView ");
     'use strict';
 
     var i;
@@ -228,6 +274,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   getBottommostItemInCurrentView: function () {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: getBottommostItemInCurrentView ");
     'use strict';
 
     var i;
@@ -241,6 +288,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   },
 
   getChildIndex: function (child) {
+cc.log(" {call-stack} :: ./layers/VerticalScrollMap.js :: getChildIndex ");
     'use strict';
 
     if (child === null) {
