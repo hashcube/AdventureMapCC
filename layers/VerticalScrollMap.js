@@ -234,5 +234,19 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
       return -1;
     }
     return this.map_children.indexOf(child);
+  },
+
+  onEnter: function () {
+    'use strict';
+
+    this._super();
+    this.setTouchEnabled(true);
+  },
+
+  onExit: function () {
+    'use strict';
+
+    this._super();
+    this.setTouchEnabled(false);
   }
 });
