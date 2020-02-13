@@ -37,13 +37,20 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
     'use strict';
 
     var top_view_item = this.getTopmostItemInCurrentView(),
-      top_view_item_height = top_view_item.getContentSize().height,
-      top_visible_item = this.map_children[this.getTopChildIndex()],
-      top_distance = top_visible_item.y - top_view_item.y,
+      top_view_item_height, top_visible_item, top_distance,
+      dist_checker;
+
+    if (top_view_item) {
+      top_view_item_height = top_view_item.getContentSize().height;
+      top_visible_item = this.map_children[this.getTopChildIndex()];
+      top_distance = top_visible_item.y - top_view_item.y;
       dist_checker = adv_map.constants.scrollmap.dist_check_const *
         top_view_item_height;
 
-    if (top_distance < dist_checker) {
+      if (top_distance < dist_checker) {
+        this.addChildToMap(adv_map.constants.scrollmap.pos_top);
+      }
+    } else {
       this.addChildToMap(adv_map.constants.scrollmap.pos_top);
     }
   },
@@ -52,13 +59,20 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
     'use strict';
 
     var bottom_view_item = this.getBottommostItemInCurrentView(),
-      bottom_view_item_height = bottom_view_item.getContentSize().height,
-      bottom_visible_item = this.map_children[this.getBottomChildIndex()],
-      bottom_distance = bottom_view_item.y - bottom_visible_item.y,
+      bottom_view_item_height, bottom_visible_item, bottom_distance,
+      dist_checker;
+
+    if (bottom_view_item) {
+      bottom_view_item_height = bottom_view_item.getContentSize().height;
+      bottom_visible_item = this.map_children[this.getBottomChildIndex()];
+      bottom_distance = bottom_view_item.y - bottom_visible_item.y;
       dist_checker = adv_map.constants.scrollmap.dist_check_const *
         bottom_view_item_height;
 
-    if (bottom_distance < dist_checker) {
+      if (bottom_distance < dist_checker) {
+        this.addChildToMap(adv_map.constants.scrollmap.pos_bottom);
+      }
+    } else {
       this.addChildToMap(adv_map.constants.scrollmap.pos_bottom);
     }
   },
