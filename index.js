@@ -45,7 +45,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
     this.data_path = opts.data_path;
     node_settings = this.node_settings = _.extend(cc.loader.getRes(
-      this.data_path + 'settings/node_settings.json'),
+      this.data_path + 'settings/node_settings.json') || {},
       opts.node_settings || {});
     tile_config = this.tile_config = cc.loader.getRes(this.data_path +
       'tile_config.json');
