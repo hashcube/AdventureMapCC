@@ -127,6 +127,38 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     }
   },
 
+  addChildByKey: function (key) {
+    'use strict';
+
+    var child = key ? this[key] : null;
+
+    if (child && cc.sys.isObjectValid(child)) {
+      if (child.updateTag) {
+        child.updateTag();
+      }
+    } else if (this.node_position) {
+      child = new this.node_settings.extras[key]({
+        ms: this.ms_number,
+        node_pos: this.node_position,
+        size: cc.size(105, 109)
+      });
+
+      this[key] = child;
+      this.addChild(child, adv_map.constants.z_index.extras);
+    }
+  },
+
+  removeChildByKey: function (key) {
+    'use strict';
+
+    var child = key ? this[key] : null;
+
+    if (child && cc.sys.isObjectValid(child)) {
+      child.removeFromParent();
+      this[key] = null;
+    }
+  },
+
   addTagById: function (id) {
     'use strict';
 
