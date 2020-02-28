@@ -18,7 +18,10 @@ adv_map = {
       dist_check_const: 10
     }
   },
-  layers: {}
+  layers: {},
+  prefix: {
+    tile_layer: 'tile_layer_'
+  }
 };
 
 adv_map.AdventureMapLayer = cc.Layer.extend({
@@ -27,10 +30,14 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   node_settings: null,
   player_navigator: null,
   tile_config: null,
+  tile_layer_ref: {},
   ctor: function () {
     'use strict';
 
     this._super();
+
+    this.tile_layer_ref = {};
+
     this.scrollable_map = new adv_map.layers.VerticalScrollMap();
     this.addChild(this.scrollable_map);
 
@@ -86,29 +93,41 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
           hor_layout.setVisible(false);
           hor_layout.build(map_data, map, node_settings);
           map.addChild(hor_layout);
+
+          // save tile layer ref for future use
+          this.setTileLayerRef(hor_layout);
         }
       }
     }
   },
 
+  setTileLayerRef: function (layer_ref) {
+    'use strict';
+
+    // TODO: handle layer_ref.ms_number in generic way if needed
+    var uniq_id = layer_ref.ms_number;
+
+    if (uniq_id) {
+      this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id] = layer_ref;
+    }
+  },
+
+  getTileLayerRef: function (uniq_id) {
+    'use strict';
+
+    return this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id];
+  },
+
   findTileLayerByMSNumber: function (ms) {
     'use strict';
 
-    var layers = this.scrollable_map.map_children;
-
-    return _.find(layers, function (layer) {
-      return layer.ms_number === ms;
-    });
+    return this.getTileLayerRef(ms);
   },
 
   getAllTileLayersWithNodes: function () {
     'use strict';
 
-    var layers = this.scrollable_map.map_children;
-
-    return _.filter(layers, function (layer) {
-      return layer.ms_number > 0;
-    });
+    return this.tile_layer_ref;
   },
 
   getTagById: function (id) {
