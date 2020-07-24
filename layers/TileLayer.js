@@ -148,6 +148,18 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     }
   },
 
+  getChildByKey: function (key) {
+    'use strict';
+
+    var child = this[key];
+
+    if (child && cc.sys.isObjectValid(child)) {
+      return child;
+    }
+
+    return null;
+  },
+
   removeChildByKey: function (key) {
     'use strict';
 
