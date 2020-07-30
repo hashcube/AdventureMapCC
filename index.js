@@ -20,7 +20,8 @@ adv_map = {
   },
   layers: {},
   prefix: {
-    tile_layer: 'tile_layer_'
+    tile_layer: 'tile_layer_',
+    chapter_layer: 'chapter_layer_'
   }
 };
 
@@ -101,7 +102,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     }
   },
 
-  setTileLayerRef: function (layer_ref) {
+  setTileLayerRef: function (layer_ref, chapter) {
     'use strict';
 
     // TODO: handle layer_ref.ms_number in generic way if needed
@@ -109,7 +110,21 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
     if (uniq_id) {
       this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id] = layer_ref;
+    } else if (chapter) {
+      this.tile_layer_ref[adv_map.prefix.chapter_layer + chapter] = layer_ref;
     }
+  },
+
+  getChapterLayerRef: function (uniq_id) {
+    'use strict';
+
+    return this.tile_layer_ref[adv_map.prefix.chapter_layer + uniq_id];
+  },
+
+  getChapterNumberFromMs: function (uniq_id) {
+    'use strict';
+
+    return this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id].chapter;
   },
 
   getTileLayerRef: function (uniq_id) {

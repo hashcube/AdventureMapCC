@@ -113,17 +113,30 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     'use strict';
 
     var chapter,
-      col_length = this.map_data.colLength,
-      chapter_settings = this.node_settings.chapter_settings;
+      chapter_num = this.chapter,
+      key = 'ChapterLayer',
+      col_length = this.map_data.colLength;
 
-    if (chapter_settings && this.tile_map.indexOf('bridge') !== -1 &&
+    if (this.tile_map.indexOf('bridge') !== -1 &&
       this.row_idx === col_length - 1) {
-      chapter = new adv_map.layers.ChapterLayer({
-        settings: chapter_settings,
+      chapter = new this.node_settings.extras[key]({
         size: this.hor_size,
-        chapter: this.chapter
+        chapter: chapter_num
       });
+      this[key] = chapter;
       this.addChild(chapter, adv_map.constants.z_index.chapter);
+      this.scrollable_map.getParent().setTileLayerRef(this, chapter_num);
+    }
+  },
+
+  updateChapter: function () {
+    'use strict';
+
+    var child = this.ChapterLayer;
+
+    if (child && cc.sys.isObjectValid(child) &&
+      child.updateTag) {
+      child.updateTag();
     }
   },
 
