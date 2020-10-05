@@ -124,6 +124,10 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   getChapterNumberFromMs: function (uniq_id) {
     'use strict';
 
+    if (uniq_id > game.res.data.map.last_ms_no) {
+      uniq_id = game.res.data.map.last_ms_no;
+     }
+
     return this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id].chapter;
   },
 
