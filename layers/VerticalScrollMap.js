@@ -170,14 +170,14 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
       last_child_idx = this.map_children.length - 1,
       focus_offset = 4,
       focus_size = this.getFocusChild().getContentSize(),
-      max_pos = this.getContainer().getContentSize().height * -1,
+      min_offset_y = this.minContainerOffset().y,
       pos;
 
     pos = (focus_index - last_child_idx + focus_offset) * focus_size.height;
     if (pos > 0) {
       pos = 0;
-    } else if (pos < max_pos) {
-      pos = max_pos;
+    } else if (pos < min_offset_y) {
+      pos = min_offset_y;
     }
     this.setContentOffset(cc.p(0, pos), !!this.map_built);
   },
