@@ -21,7 +21,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
   setAdventureMapSize: function () {
     'use strict';
 
-    var i, length, totalHeight, totalWidth,
+    var length, totalHeight, totalWidth,
       locItems = this.map_children = this.map_layout.getChildren();
 
     length = locItems.length;

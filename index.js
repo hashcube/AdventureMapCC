@@ -239,32 +239,13 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     return nodes;
   },
 
-  cycleThroughMap: function (ms) {
-    'use strict';
-
-    var map = this.scrollable_map,
-      i = 0,
-      tileLayer;
-
-    for (i = 0; i < map.map_children.length; i++) {
-      tileLayer = map.map_children[i];
-      if (tileLayer.ms_number === ms) {
-        map.setFocusChild(tileLayer);
-      }
-      if (tileLayer.hasContainer()) {
-        cc.pool.putInPool(tileLayer);
-      }
-    }
-    map.createVisibleArea();
-  },
-
   focusNodeByMs: function (ms) {
     'use strict';
 
     var layer = this.findTileLayerByMSNumber(ms);
 
     this.scrollable_map.setFocusChild(layer);
-    this.cycleThroughMap(ms);
+    this.scrollable_map.createVisibleArea();
     this.scrollable_map.jumpToVisibleArea();
   }
 });
