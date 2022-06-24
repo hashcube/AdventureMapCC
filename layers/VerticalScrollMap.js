@@ -25,10 +25,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
       locItems = this.map_children = this.map_layout.getChildren();
 
     length = locItems.length;
-    totalHeight = 0;
-    for (i = 0; i < length; i++) {
-      totalHeight += locItems[i].getContentSize().height;
-    }
+    totalHeight = locItems[0].getContentSize().height * length;
     totalWidth = locItems[0].getContentSize().width;
     this.map_layout.setContentSize(cc.size(totalWidth, totalHeight));
   },
