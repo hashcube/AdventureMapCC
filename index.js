@@ -146,12 +146,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     return this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id];
   },
 
-  findTileLayerByMSNumber: function (ms) {
-    'use strict';
-
-    return this.getTileLayerRef(ms);
-  },
-
   getAllTileLayersWithNodes: function () {
     'use strict';
 
@@ -187,7 +181,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   removeTagByMs: function (tag, ms) {
     'use strict';
 
-    var layer = this.findTileLayerByMSNumber(ms),
+    var layer = this.getTileLayerRef(ms),
       child;
 
     if (layer) {
@@ -247,7 +241,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   focusNodeByMs: function (ms) {
     'use strict';
 
-    var layer = this.findTileLayerByMSNumber(ms);
+    var layer = this.getTileLayerRef(ms);
 
     this.scrollable_map.setFocusChild(layer);
     this.scrollable_map.createVisibleArea();
