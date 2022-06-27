@@ -152,7 +152,7 @@ adv_map.layers.VerticalScrollMap = cc.ScrollView.extend({
         this.getParent().createMapWithTile(i);
       } else {
         tileLayer = this.map_children[i];
-        tileLayer.createTileLayer();
+        //tileLayer.createTileLayer();
         tileLayer.setVisible(true);
       }
     }

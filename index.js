@@ -71,10 +71,14 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var i, j, k, tile_data, tile, repeat, map_data, chapter,
-      hor_layout, map, col_length, range;
+      hor_layout, map, col_length, range, count = 0;
 
     map = this.scrollable_map;
     chapter = tile_config.length / 2;
+    //console.log(tile_config);
+    ["map_1", "map_2", "bridge_1", "bridge_2", "comingsoon"].forEach(function(tile) {
+      cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
+    });
     for (k = 0; k < tile_config.length; k++) {
       tile_data = tile_config[k];
       tile = tile_data.tile_id;
@@ -84,12 +88,12 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
       map_data = cc.loader.getRes(this.data_path + tile + '.json');
       map_data.ms = ms;
-      cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
       col_length = map_data.colLength;
 
       for (i = repeat; i > 0; i--) {
         for (j = 0; j < col_length; j++) {
           hor_layout = new adv_map.layers.TileLayer(map_data);
+          count++;
           hor_layout.tile_map = tile;
           hor_layout.map_idx = i - 1;
           hor_layout.row_idx = j;
@@ -103,7 +107,9 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
           this.setTileLayerRef(hor_layout);
         }
       }
+      //console.log("tile count", tile, count);
     }
+    console.log("final count", count);
   },
 
   setTileLayerRef: function (layer_ref, chapter) {
@@ -128,23 +134,27 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   getChapterNumberFromMs: function (uniq_id) {
     'use strict';
 
-    if (uniq_id > this.map_cnf.last_ms_no) {
-      uniq_id = this.map_cnf.last_ms_no;
-     }
-
-    return this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id].chapter;
+    return parseInt(uniq_id / 20) + 1;
   },
 
   getTileLayerRef: function (uniq_id) {
     'use strict';
 
+    var repeat, pos, map_data;
+
+    var tile = this.tile_config.find(function (obj) {
+      var range = obj.range;
+      return range && uniq_id >= range.min && uniq_id <= range.max;
+    });
+    map_data = cc.loader.getRes(this.data_path + tile.tile_id + '.json');
+
+    pos = map_data.nodes.find(function name(obj) {
+      return obj.node === uniq_id;
+    });
+    repeat = tile.repeat;
+    console.log(pos);
+    console.log("tile layer ref", uniq_id);
     return this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id];
-  },
-
-  findTileLayerByMSNumber: function (ms) {
-    'use strict';
-
-    return this.getTileLayerRef(ms);
   },
 
   getAllTileLayersWithNodes: function () {
@@ -182,7 +192,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   removeTagByMs: function (tag, ms) {
     'use strict';
 
-    var layer = this.findTileLayerByMSNumber(ms),
+    var layer = this.getTileLayerRef(ms),
       child;
 
     if (layer) {
@@ -202,7 +212,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     hor_layout = map.map_children[index];
     hor_layout.setVisible(true);
     map_data = hor_layout.map_data;
-    hor_layout.reCreateTileLayer(map_data);
+    //hor_layout.reCreateTileLayer(map_data);
   },
 
   findNodeByMSNumber: function (ms) {
@@ -242,7 +252,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   focusNodeByMs: function (ms) {
     'use strict';
 
-    var layer = this.findTileLayerByMSNumber(ms);
+    var layer = this.getTileLayerRef(ms);
 
     this.scrollable_map.setFocusChild(layer);
     this.scrollable_map.createVisibleArea();

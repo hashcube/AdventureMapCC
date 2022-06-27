@@ -87,7 +87,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
 
   createTileLayer: function () {
     'use strict';
-
+return;
     var tile, j, url, container, tile_added, prev_tiles_added, map_data,
       tile_map, row_idx;
 
@@ -103,6 +103,7 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
     for (j = 0; j < map_data.rowLength; j++) {
       url = tile_map + '_' + row_idx + '_' + j + '.png';
       tile_added = prev_tiles_added + j;
+      //console.log(url);
       tile = new ccui.ImageView(url, ccui.Widget.PLIST_TEXTURE);
       container.addChild(tile);
     }
@@ -157,7 +158,8 @@ adv_map.layers.TileLayer = ccui.Widget.extend({
       });
 
       this[key] = child;
-      this.addChild(child, adv_map.constants.z_index.extras);
+      this.scrollable_map.addChild(child);
+      //this.addChild(child, adv_map.constants.z_index.extras);
     }
   },
 
