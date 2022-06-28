@@ -71,7 +71,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     'use strict';
 
     var i, j, k, tile_data, tile, repeat, map_data, chapter,
-      hor_layout, map, col_length, range;
+      hor_layout, map, col_length, range, tile_sprites = [];
 
     map = this.scrollable_map;
     chapter = tile_config.length / 2;
@@ -84,7 +84,9 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
 
       map_data = cc.loader.getRes(this.data_path + tile + '.json');
       map_data.ms = ms;
-      cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
+      if(tile_sprites.indexOf(tile) === -1) {
+        tile_sprites.push(tile);
+      }
       col_length = map_data.colLength;
 
       for (i = repeat; i > 0; i--) {
@@ -104,6 +106,9 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
         }
       }
     }
+    tile_sprites.forEach(function(tile) {
+      cc.spriteFrameCache.addSpriteFrames(res[tile], res[tile + '_img']);
+    });
   },
 
   setTileLayerRef: function (layer_ref, chapter) {
@@ -141,12 +146,6 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     return this.tile_layer_ref[adv_map.prefix.tile_layer + uniq_id];
   },
 
-  findTileLayerByMSNumber: function (ms) {
-    'use strict';
-
-    return this.getTileLayerRef(ms);
-  },
-
   getAllTileLayersWithNodes: function () {
     'use strict';
 
@@ -182,7 +181,7 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
   removeTagByMs: function (tag, ms) {
     'use strict';
 
-    var layer = this.findTileLayerByMSNumber(ms),
+    var layer = this.getTileLayerRef(ms),
       child;
 
     if (layer) {
@@ -239,32 +238,13 @@ adv_map.AdventureMapLayer = cc.Layer.extend({
     return nodes;
   },
 
-  cycleThroughMap: function (ms) {
-    'use strict';
-
-    var map = this.scrollable_map,
-      i = 0,
-      tileLayer;
-
-    for (i = 0; i < map.map_children.length; i++) {
-      tileLayer = map.map_children[i];
-      if (tileLayer.ms_number === ms) {
-        map.setFocusChild(tileLayer);
-      }
-      if (tileLayer.hasContainer()) {
-        cc.pool.putInPool(tileLayer);
-      }
-    }
-    map.createVisibleArea();
-  },
-
   focusNodeByMs: function (ms) {
     'use strict';
 
-    var layer = this.findTileLayerByMSNumber(ms);
+    var layer = this.getTileLayerRef(ms);
 
     this.scrollable_map.setFocusChild(layer);
-    this.cycleThroughMap(ms);
+    this.scrollable_map.createVisibleArea();
     this.scrollable_map.jumpToVisibleArea();
   }
 });
